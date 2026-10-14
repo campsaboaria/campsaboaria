@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#123f24">
+<title>CampSaboaria - Lembrancinhas Personalizadas</title>
+
+<!-- Configurações PWA para permitir instalação no celular -->
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<style>
+:root {
+  --green-dark: #123f24;
+  --green-main: #2d6a4f;
+  --green-btn: #258349;
+  --bg-light: #f7f9f6;
+  --card-bg: #ffffff;
+  --text-dark: #2b2b2b;
+  --text-muted: #556b5d;
+  --accent-pink: #f4c2c2;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; }
+
+/* Header & Navegação */
+header { background: #fff; border-bottom: 1px solid #e0e6e1; position: sticky; top: 0; z-index: 100; }
+.header-container { max-width: 1200px; margin: 0 auto; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 24px; font-weight: bold; color: var(--green-dark); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+nav { display: flex; gap: 20px; align-items: center; }
+nav a { text-decoration: none; color: var(--text-dark); font-weight: 500; font-size: 15px; }
+nav a:hover { color: var(--green-btn); }
+
+.btn-header { background: var(--green-btn); color: #fff; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 8px; cursor: pointer; border: 0; }
+
+/* Banner Hero */
+.hero { max-width: 1200px; margin: 20px auto; padding: 40px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; background: #eaf1e8; border-radius: 24px; }
+.hero-text h1 { font-size: clamp(28px, 4vw, 42px); color: var(--green-dark); margin-bottom: 15px; line-height: 1.2; }
+.hero-text p { color: var(--text-muted); font-size: 16px; margin-bottom: 25px; }
+.hero-img { width: 100%; border-radius: 20px; object-fit: cover; max-height: 400px; box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+
+/* Grade de Produtos */
+.section-title { text-align: center; font-size: 28px; color: var(--green-dark); margin: 40px 0 10px; }
+.section-subtitle { text-align: center; color: var(--text-muted); margin-bottom: 30px; }
+
+.products-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 25px; padding: 0 20px; }
+.product-card { background: var(--card-bg); border-radius: 18px; overflow: hidden; border: 1px solid #e0e8de; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+.product-img { width: 100%; height: 200px; object-fit: cover; background: #f0f0f0; }
+.product-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+.product-tag { font-size: 11px; text-transform: uppercase; color: var(--green-btn); font-weight: bold; margin-bottom: 5px; }
+.product-title { font-size: 18px; color: var(--green-dark); font-weight: bold; margin-bottom: 8px; }
+.product-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 15px; flex-grow: 1; }
+.product-price { font-size: 18px; font-weight: bold; color: var(--green-dark); margin-bottom: 12px; }
+
+.btn-add-cart { background: var(--green-btn); color: #fff; border: 0; width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+.btn-add-cart:hover { background: var(--green-dark); }
+
+/* Carrinho Flutuante */
+.cart-floating { position: fixed; bottom: 25px; right: 25px; background: var(--green-dark); color: #fff; padding: 15px 22px; border-radius: 30px; box-shadow: 0 8px 25px rgba(0,0,0,0.2); cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 10px; z-index: 99; }
+.cart-badge { background: #e74c3c; color: #fff; border-radius: 50%; padding: 2px 8px; font-size: 12px; }
+
+/* Modal do Carrinho */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 200; justify-content: center; align-items: center; padding: 20px; }
+.modal-content { background: #fff; width: min(100%, 500px); border-radius: 20px; padding: 25px; max-height: 90vh; overflow-y: auto; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+.close-modal { font-size: 22px; cursor: pointer; border: 0; background: none; }
+
+/* Painel de Admin */
+.admin-section { max-width: 1200px; margin: 50px auto; padding: 30px; background: #fff; border-radius: 20px; border: 1px dashed var(--green-btn); }
+.admin-form label { display: block; margin: 12px 0 5px; font-weight: bold; font-size: 14px; }
+.admin-form input, .admin-form select, .admin-form textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; outline: none; }
+
+/* Rodapé */
+footer { background: var(--green-dark); color: #fff; padding: 40px 20px; margin-top: 60px; text-align: center; }
+
+@media(max-width: 768px) {
+  .hero { grid-template-columns: 1fr; text-align: center; }
+  nav { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-container">
+    <a href="#" class="logo">🌿 CampSaboaria</a>
+    <nav>
+      <a href="#produtos">Produtos</a>
+      <a href="#admin">Admin</a>
+    </nav>
+    <button class="btn-header" onclick="abrirCarrinho()">🛒 Carrinho (<span id="cartCountHeader">0</span>)</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-text">
+    <h1>Lembrancinhas que encantam e perfumam momentos especiais</h1>
+    <p>Sabonetes artesanais feitos com muito carinho, ideais para casamentos, aniversários, batizados e chás de bebê.</p>
+    <a href="#produtos" class="btn-header" style="display:inline-flex;">Ver Produtos →</a>
+  </div>
+  <img src="https://images.unsplash.com/photo-1607006482182-3d8916757d9f?w=600" alt="Sabonetes Artesanais" class="hero-img">
+</section>
+
+<section id="produtos">
+  <h2 class="section-title">Nossos Sabonetes</h2>
+  <p class="section-subtitle">Escolha os seus favoritos e solicite pelo carrinho</p>
+  <div class="products-grid" id="productsGrid"></div>
+</section>
+
+<!-- Área do Administrador protegida por senha -->
+<section class="admin-section" id="admin">
+  <h3 style="color: var(--green-dark); margin-bottom: 10px;">🔒 Área do Administrador</h3>
+  <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">Adicione novas lembrancinhas carregando fotos direto do seu celular.</p>
+  
+  <div id="adminLogin">
+    <input type="password" id="adminPass" placeholder="Digite a senha de administrador" style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; width: 250px;">
+    <button onclick="autenticarAdmin()" class="btn-add-cart" style="width: auto; padding: 10px 20px; display: inline-block;">Entrar</button>
+  </div>
+
+  <form class="admin-form" id="formAddProduct" style="display: none;" onsubmit="salvarNovoProduto(event)">
+    <label>Nome da Lembrancinha</label>
+    <input type="text" id="prodNome" required placeholder="Ex: Mini Rosas Perfumadas">
+
+    <label>Tipo / Ocasião</label>
+    <select id="prodTipo">
+      <option value="Casamentos">Casamentos</option>
+      <option value="Chá de Bebê">Chá de Bebê</option>
+      <option value="Aniversários">Aniversários</option>
+      <option value="Batizados">Batizados</option>
+      <option value="Outras ocasiões">Outras ocasiões</option>
+    </select>
+
+    <label>Preço Unitário (R$)</label>
+    <input type="number" step="0.01" id="prodPreco" required placeholder="4.50">
+
+    <label>Imagem da Lembrancinha (Escolher do Celular)</label>
+    <input type="file" id="prodImg" accept="image/*" onchange="previewEGerarIA(event)" required>
+    <div id="aiSuggestionBox" style="margin-top: 10px; font-size: 12px; color: var(--green-btn); font-style: italic;"></div>
+
+    <label>Descrição</label>
+    <textarea id="prodDesc" rows="3" placeholder="Descrição da lembrancinha..."></textarea>
+
+    <button type="submit" class="btn-add-cart" style="margin-top: 20px;">+ Adicionar Lembrancinha</button>
+  </form>
+</section>
+
+<div class="cart-floating" onclick="abrirCarrinho()">
+  🛒 Ver Pedido <span class="cart-badge" id="cartCount">0</span>
+</div>
+
+<div class="modal" id="cartModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Meu Carrinho</h3>
+      <button class="close-modal" onclick="fecharCarrinho()">✕</button>
+    </div>
+    <div id="cartItems">
+      <p style="text-align: center; color: var(--text-muted);">Seu carrinho está vazio.</p>
+    </div>
+    <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+      <h4>Total: R$ <span id="cartTotal">0.00</span></h4>
+      <button class="btn-add-cart" style="margin-top: 15px; background: #25d366;" onclick="enviarPedidoWhatsApp()">Finalizar Pedido via WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p><strong>CampSaboaria</strong> - Lembrancinhas Personalizadas em Sabonete</p>
+</footer>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+
+let produtos = JSON.parse(localStorage.getItem('camp_produtos')) || [
+  { id: 1, nome: "Mini Rosas", tipo: "Aniversários", preco: 4.50, desc: "Sabonetes em formato de rosa com fragrâncias suaves.", img: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400" },
+  { id: 2, nome: "Corações Delicados", tipo: "Casamentos", preco: 4.00, desc: "Ideal para casamentos com fita de cetim personalizada.", img: "https://images.unsplash.com/photo-1607006482182-3d8916757d9f?w=400" },
+  { id: 3, nome: "Ursinhos de Sabonete", tipo: "Chá de Bebê", preco: 5.50, desc: "Uma lembrancinha fofa para chás de bebê e batizados.", img: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=400" }
+];
+
+let carrinho = [];
+
+function renderProdutos() {
+  const grid = document.getElementById('productsGrid');
+  grid.innerHTML = produtos.map(p => `
+    <div class="product-card">
+      <div>
+        <img src="${p.img}" class="product-img" alt="${p.nome}">
+        <div class="product-info">
+          <span class="product-tag">${p.tipo}</span>
+          <div class="product-title">${p.nome}</div>
+          <div class="product-desc">${p.desc}</div>
+        </div>
+      </div>
+      <div style="padding: 0 20px 20px 20px;">
+        <div class="product-price">R$ ${p.preco.toFixed(2)} <small style="font-size:12px; font-weight:normal;">cada</small></div>
+        <button class="btn-add-cart" onclick="adicionarAoCarrinho(${p.id})">Adicionar ao Carrinho</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function adicionarAoCarrinho(id) {
+  const prod = produtos.find(p => p.id === id);
+  carrinho.push(prod);
+  atualizarCarrinho();
+}
+
+function atualizarCarrinho() {
+  document.getElementById('cartCount').textContent = carrinho.length;
+  document.getElementById('cartCountHeader').textContent = carrinho.length;
+  
+  const itemsContainer = document.getElementById('cartItems');
+  if(carrinho.length === 0) {
+    itemsContainer.innerHTML = `<p style="text-align: center; color: var(--text-muted);">Seu carrinho está vazio.</p>`;
+    document.getElementById('cartTotal').textContent = '0.00';
+    return;
+  }
+
+  let total = 0;
+  itemsContainer.innerHTML = carrinho.map((item, idx) => {
+    total += item.preco;
+    return `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px;">
+        <div>
+          <strong>${item.nome}</strong><br>
+          <small>R$ ${item.preco.toFixed(2)}</small>
+        </div>
+        <button onclick="removerDoCarrinho(${idx})" style="background:none; border:none; color:red; cursor:pointer;">Remover</button>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('cartTotal').textContent = total.toFixed(2);
+}
+
+function removerDoCarrinho(idx) {
+  carrinho.splice(idx, 1);
+  atualizarCarrinho();
+}
+
+function abrirCarrinho() { document.getElementById('cartModal').style.display = 'flex'; }
+function fecharCarrinho() { document.getElementById('cartModal').style.display = 'none'; }
+
+function autenticarAdmin() {
+  const pass = document.getElementById('adminPass').value;
+  if(pass === '1234') { // Senha padrão
+    document.getElementById('adminLogin').style.display = 'none';
+    document.getElementById('formAddProduct').style.display = 'block';
+  } else {
+    alert('Senha incorreta!');
+  }
+}
+
+function previewEGerarIA(e) {
+  const box = document.getElementById('aiSuggestionBox');
+  box.textContent = "✨ [Pronto para IA futura]: A análise da imagem para descrição automática será conectada aqui.";
+}
+
+function salvarNovoProduto(e) {
+  e.preventDefault();
+  const file = document.getElementById('prodImg').files[0];
+  const reader = new FileReader();
+
+  reader.onloadend = function() {
+    const novo = {
+      id: Date.now(),
+      nome: document.getElementById('prodNome').value,
+      tipo: document.getElementById('prodTipo').value,
+      preco: parseFloat(document.getElementById('prodPreco').value),
+      desc: document.getElementById('prodDesc').value || "Lembrancinha personalizada feita sob encomenda.",
+      img: reader.result
+    };
+
+    produtos.push(novo);
+    localStorage.setItem('camp_produtos', JSON.stringify(produtos));
+    renderProdutos();
+    alert('Lembrancinha adicionada com sucesso!');
+    document.getElementById('formAddProduct').reset();
+  };
+
+  if(file) reader.readAsDataURL(file);
+}
+
+function enviarPedidoWhatsApp() {
+  if(carrinho.length === 0) return alert('Seu carrinho está vazio!');
+  const meuWhatsApp = "5511999999999"; // Substitua pelo seu número
+  let texto = "Olá! Gostaria de fazer o pedido das seguintes lembrancinhas:\n\n";
+  carrinho.forEach(item => { texto += `- ${item.nome} (R$ ${item.preco.toFixed(2)})\n`; });
+  texto += `\n*Total:* R$ ${document.getElementById('cartTotal').textContent}`;
+  window.open(`https://wa.me/${meuWhatsApp}?text=${encodeURIComponent(texto)}`, '_blank');
+}
+
+renderProdutos();
+</script>
+</body>
+</html>
