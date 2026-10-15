@@ -1,5 +1,5 @@
-const V = 'campsaboaria-v3';
-const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './img/logo.jpg', './img/hero.jpg'];
+const V = 'campsaboaria-v4';
+const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './logo.jpg', './hero.jpg'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(V).then(c => c.addAll(SHELL)));
   self.skipWaiting();
