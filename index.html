@@ -268,7 +268,7 @@ footer .script{font-size:26px;color:var(--esc);text-align:right;line-height:1.1}
 
 <script>
 /* ====== CONFIGURE AQUI ====== */
-const CFG={whats:'5511987654221',tel:'(11) 98765-4221',horario:'Atendimento de segunda a sábado, das 8h às 18h.',insta:'campsaboaria',hash:'3e8b771efdec77f457d527f5e9fe7d33b1f4c57173e1722b2027f0745cba3240',repo:''};
+const CFG={whats:'',tel:'xxxx',horario:'xxxx',insta:'campsaboaria',hash:'3e8b771efdec77f457d527f5e9fe7d33b1f4c57173e1722b2027f0745cba3240',repo:''};
 const TEMAS=['Difusores','Rosas','Girassol','Flores','Corações','Álcool em gel','Sabonete líquido','Animais','Velas'];
 const ICO={'Difusores':'🌿','Rosas':'🌹','Girassol':'🌻','Flores':'🌸','Corações':'❤️','Álcool em gel':'🧴','Sabonete líquido':'💧','Animais':'🐻','Velas':'🕯️'};
 /* ============================ */
@@ -280,7 +280,8 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 let base=[],cart=ler('cs_cart',[]),filtro='Todos',editId=null;
 const rasc=()=>ler('cs_rascunho',null);
 const itens=()=>rasc()??base;
-const zapUrl=t=>'https://wa.me/'+CFG.whats+(t?'?text='+encodeURIComponent(t):'');
+const zapUrl=t=>CFG.whats?'https://wa.me/'+CFG.whats+(t?'?text='+encodeURIComponent(t):''):'#semzap';
+document.addEventListener('click',e=>{const a=e.target.closest('a');if(a&&a.getAttribute('href')==='#semzap'){e.preventDefault();alert('O WhatsApp da CampSaboaria ainda será informado aqui. Em breve!')}});
 function mexer(fn){const d=JSON.parse(JSON.stringify(itens()));fn(d);return gravar('cs_rascunho',d)}
 
 async function iniciar(){
@@ -334,6 +335,7 @@ function enviar(){
  cart.forEach(c=>t+=`• ${c.q}x ${m[c.id].nome}${m[c.id].preco>0?' ('+R(m[c.id].preco)+' cada)':''}\n`);
  t+='\nTotal: '+$('#total').textContent;
  if($('#cObs').value)t+='\n\nObservações: '+$('#cObs').value;
+ if(!CFG.whats)return alert('O WhatsApp da CampSaboaria ainda será informado aqui. Em breve!');
  window.open(zapUrl(t),'_blank');
 }
 /* administrador */
