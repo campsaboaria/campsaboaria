@@ -1,4 +1,4 @@
-const V = 'campsaboaria-v7';
+const V = 'campsaboaria-v9';
 const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './logo.jpg', './hero.jpg', './leaf-esq.png', './leaf-dir.png', './leaf-sobre.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(V).then(c => Promise.all(SHELL.map(u => c.add(u).catch(() => {})))));

@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=1100">
 <meta name="theme-color" content="#2d6a35">
 <title>CampSaboaria - Lembrancinhas Personalizadas</title>
 <meta name="description" content="Lembrancinhas personalizadas: sabonetes, difusores, velas e muito mais, feitos com carinho.">
@@ -15,7 +15,7 @@
 :root{--verde:#2d6a35;--verde2:#3b8545;--esc:#24562c;--folha:#e6efda;--creme:#f8faf2;--linha:#dde6d3;--texto:#2b312c;--suave:#59675c;--rosa:#f3b9c0}
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
-html{scroll-behavior:smooth;scroll-padding-top:80px}
+html{scroll-behavior:smooth;scroll-padding-top:80px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{font-family:'Nunito','Trebuchet MS',sans-serif;background:var(--creme);color:var(--texto);line-height:1.55}
 h1,h2,h3{font-family:'Lora',Georgia,serif;color:var(--esc);line-height:1.2;font-weight:600}
 .script{font-family:'Dancing Script','Brush Script MT',cursive;color:var(--verde);font-weight:500}
@@ -51,6 +51,7 @@ nav a:hover{border-color:var(--verde2);color:var(--verde)}
 .hero h1{font-size:clamp(26px,3.4vw,42px);max-width:11.5em;margin-bottom:14px}
 .hero p{max-width:38ch;margin-bottom:22px;font-size:15px}
 .hero .t{max-width:480px}
+.frase{position:absolute;z-index:2;right:max(22px,calc((100vw - 1100px)/2));top:24px;text-align:center;font-size:26px;line-height:1.1;text-shadow:0 0 10px #fffd,0 0 4px #fff}
 /* diferenciais */
 .difw{position:relative;overflow:hidden;background:linear-gradient(#f4f8ec,var(--creme))}
 .dif{display:grid;grid-template-columns:repeat(4,1fr);padding:30px 0}
@@ -97,6 +98,7 @@ section{padding:44px 0}
 .dp{background:#fff;border-radius:12px;padding:16px;display:flex;gap:14px;box-shadow:0 2px 10px #2d6a350d}
 .av{width:52px;height:52px;border-radius:50%;background:var(--folha);color:var(--verde);display:grid;place-items:center;font-weight:700;font-size:20px;flex:none}
 .dp p{font-size:14px;margin:0}.dp small{display:block;color:var(--verde);margin-top:4px;font-weight:700}.est{color:#d8a31a;letter-spacing:2px;font-size:13px}
+.inst2{display:none;position:absolute;right:14px;top:4px;z-index:2;padding:4px 10px!important;font-size:12px!important}
 /* admin */
 .admbar{background:#e4edd7;border-bottom:1px solid var(--linha)}
 .admbar details.admin{border:0;border-radius:0;background:none;margin:0;padding:8px 0}
@@ -134,19 +136,21 @@ footer .script{font-size:26px;color:var(--esc);text-align:right;line-height:1.1}
 @media(max-width:860px){
  html{scroll-padding-top:10px}
  header.topo{position:static}
- .top{grid-template-columns:1fr auto;grid-template-areas:'marca acoes' 'nav nav';gap:0 8px;min-height:0;padding-top:8px}
+ .top{grid-template-columns:auto 1fr auto;grid-template-areas:'marca nav acoes';gap:8px;min-height:58px;padding-top:0}
+ .top .marca span{display:none}.inst2{display:inline-flex}
  .wrap{padding:0 14px}
  .marca{gap:8px;min-width:0}.marca img{width:46px;height:46px}.marca b{font-size:24px;white-space:nowrap}.marca small{display:none}
- .acoes{gap:6px}.btn.sm{padding:8px 11px}
+ .acoes{gap:6px}.btn.sm{padding:8px 11px}.acoes .btn.out{display:none}
  .lbl{display:none}#topZap{width:38px;height:38px;padding:0;border-radius:50%}
- .top nav{justify-self:stretch;overflow-x:auto;gap:22px;padding:6px 2px 0;border-top:1px solid var(--linha);margin-top:8px;scrollbar-width:none}
+ .top nav{justify-self:stretch;overflow-x:auto;justify-content:safe center;gap:11px;padding:0;scrollbar-width:none}
  nav::-webkit-scrollbar{display:none}
- nav a{font-size:13.5px;padding:7px 0 8px}
+ nav a{font-size:11.5px;padding:6px 0}
  .hero .foto{width:100%;background-size:auto 118%;background-position:100% 14%}
- .hero .foto::before{background:linear-gradient(90deg,#e8efdc 0,#e8efdcf0 36%,#e8efdc00 76%)}
- .hero .wrap{min-height:300px;padding-top:22px;padding-bottom:22px}
+ .hero .foto::before{background:linear-gradient(90deg,#e8efdc 0,#e8efdcd0 32%,#e8efdc00 70%)}
+ .frase{font-size:14px;right:12px;top:10px}
+ .hero .wrap{min-height:280px;padding-top:26px;padding-bottom:22px}
  .hero .t{max-width:62%}
- .hero h1{font-size:24px;max-width:none;margin-bottom:10px}
+ .hero h1{font-size:clamp(17px,4.8vw,26px);max-width:none;margin-bottom:10px}
  .hero p{font-size:12.5px;margin-bottom:14px}
  .hero .eb{font-size:10px}
  .hero .btn{padding:9px 14px;font-size:12.5px}
@@ -165,7 +169,7 @@ footer .script{font-size:26px;color:var(--esc);text-align:right;line-height:1.1}
  footer .script{text-align:left}
  .ocas{gap:12px}.ocas button{width:72px}.ocas i{width:54px;height:54px;font-size:24px}
 }
-@media(min-width:600px) and (max-width:860px){.grade{grid-template-columns:repeat(3,1fr)}.hero h1{font-size:32px}.hero .t{max-width:55%}.dif div{font-size:12px}}
+@media(min-width:600px) and (max-width:860px){.top .marca span{display:block}.top .marca b{font-size:26px}nav a{font-size:13.5px!important}.top nav{gap:20px}.frase{font-size:22px}.grade{grid-template-columns:repeat(3,1fr)}.hero h1{font-size:32px}.hero .t{max-width:55%}.dif div{font-size:12px}}
 @media(max-width:380px){.grade{grid-template-columns:1fr}.marca img{width:36px;height:36px}.marca b{font-size:18px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
@@ -192,7 +196,7 @@ footer .script{font-size:26px;color:var(--esc);text-align:right;line-height:1.1}
   <a class="btn" id="topZap" href="#" target="_blank" rel="noopener" aria-label="Fale Conosco"><svg class="ico"><use href="#zap"/></svg><span class="lbl">Fale Conosco</span></a>
  </div>
 </div></header>
-<div class="admbar"><div class="wrap"><details class="admin" id="admin">
+<div class="admbar"><div class="wrap" style="position:relative"><button class="btn out sm inst2" id="btnInstalar2" hidden>⬇ Instalar app</button><details class="admin" id="admin">
  <summary>🔒 Área do administrador</summary>
  <div id="login" class="linha">
   <input type="password" id="senha" placeholder="Senha de administrador" style="max-width:260px" autocomplete="current-password">
@@ -223,10 +227,11 @@ footer .script{font-size:26px;color:var(--esc);text-align:right;line-height:1.1}
 
 <main id="inicio">
 <div class="hero">
+ <div class="frase script" aria-hidden="true">Pequenos gestos<br>espalham amor! ♡</div>
  <div class="foto" role="img" aria-label="Difusores artesanais da CampSaboaria sobre um banquinho com flores"></div>
  <div class="wrap"><div class="t">
   <div class="eb">Artesanal e personalizado</div>
-  <h1>Lembrancinhas que encantam e perfumam momentos especiais</h1>
+  <h1>Lembrancinhas que<br>encantam e perfumam<br>momentos especiais</h1>
   <p>Lembrancinhas feitas com muito carinho, ideais para casamentos, aniversários, batizados, chás de bebê e outras ocasiões.</p>
   <a class="btn" href="#destaque"><svg class="ico"><use href="#zap"/></svg>Ver produtos →</a>
  </div></div>
@@ -427,11 +432,12 @@ async function publicar(){
 let dp;const bi=$('#btnInstalar');
 if(!(matchMedia('(display-mode: standalone)').matches||navigator.standalone))bi.hidden=false;
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e});
-addEventListener('appinstalled',()=>bi.hidden=true);
+addEventListener('appinstalled',()=>{bi.hidden=true;$('#btnInstalar2').hidden=true});
 bi.onclick=async()=>{
  if(dp){dp.prompt();await dp.userChoice;dp=null}
  else alert(/iPhone|iPad/.test(navigator.userAgent)?'No iPhone: toque em Compartilhar e depois em "Adicionar à Tela de Início".':'Abra o menu do navegador (⋮) e toque em "Instalar app" ou "Adicionar à tela inicial".');
 };
+$('#btnInstalar2').hidden=bi.hidden;$('#btnInstalar2').onclick=()=>bi.onclick();
 document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',()=>$('#nav').classList.remove('on')));
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 const SECS=['inicio','destaque','sobre','depoimentos','contato'];
