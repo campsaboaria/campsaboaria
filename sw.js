@@ -1,4 +1,4 @@
-const V = 'campsaboaria-v10';
+const V = 'campsaboaria-v11';
 const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './logo.jpg', './hero.jpg', './leaf-esq.png', './leaf-dir.png', './leaf-sobre.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(V).then(c => Promise.all(SHELL.map(u => c.add(u).catch(() => {})))));
@@ -12,7 +12,6 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
   if (url.origin !== location.origin) return;
-  // rede primeiro (conteúdo sempre atualizado), cache como reserva offline
   e.respondWith(
     fetch(e.request).then(r => {
       const copy = r.clone();
