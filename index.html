@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1100">
+<meta name="viewport" content="width=960">
 <meta name="theme-color" content="#2f5233">
 <title>CampSaboaria — Lembrancinhas Personalizadas</title>
 <meta name="description" content="Sabonetes artesanais e lembrancinhas personalizadas para casamentos, aniversários, batizados e chás de bebê.">
@@ -59,7 +59,7 @@ nav a:hover{border-color:var(--verde2);color:var(--verde)}
 section{padding:44px 0}
 .cab{display:flex;justify-content:space-between;align-items:end;gap:14px;flex-wrap:wrap;margin-bottom:20px}
 .cab h2{font-size:clamp(26px,3.4vw,34px)}.cab p{color:var(--suave)}
-.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:20px}
 .card{background:#fff;border:1px solid var(--linha);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 10px #2d6a350d}
 .foto2{aspect-ratio:4/3;background:var(--folha);display:grid;place-items:center;font-size:54px;overflow:hidden}
 .foto2 img{width:100%;height:100%;object-fit:cover}
@@ -202,6 +202,41 @@ fieldset.pag{border:1px solid var(--linha);border-radius:10px;padding:6px 12px 8
 .admbox.logado #lista .lk:last-child{color:#ff9c94!important}
 .admbox.logado .bd{background:#2f4d36;color:#d8efd9}
 .admbox.logado .st-rascunho{background:#4a4a4a;color:#e4e4e4}.admbox.logado .st-agendado{background:#5c4a1a;color:#ffe3a0}.admbox.logado .st-publicado{background:#2f6a3c;color:#e6f7e8}
+
+:root{--suave:#3a4a3e;--texto:#1b231c}
+body{font-size:17px}
+nav a{font-size:17px}
+.btn{font-size:16px}.btn.sm{font-size:15px}
+.eb{font-size:14px}
+.hero h1{font-size:clamp(28px,3.7vw,46px)}
+.hero p{font-size:18px}
+.frase{font-size:28px}
+.dif div{font-size:15.5px}.dif b{font-size:17.5px}
+.cab p{font-size:17.5px}
+.info h3{font-size:20px}.info p{font-size:15.5px}.preco{font-size:20px}.preco small{font-size:14px}.mais{font-size:15.5px}
+.sobre p{font-size:17.5px}.feat{font-size:16px}
+.ocas button{font-size:15.5px;width:100px}.ocas i{width:72px;height:72px;font-size:32px}
+.tit{font-size:27px}
+.dp p{font-size:16.5px}.dp small{font-size:15px}
+footer p{font-size:16.5px}footer h3{font-size:18.5px}.fim{font-size:14.5px}
+.marca small{font-size:10.5px}
+.fretebar{font-size:16px}.dica{font-size:15px}
+label{font-size:16px}input,select,textarea{font-size:16px}
+.it2{font-size:16px}.it2 p{font-size:14px}.it2 small{font-size:14px}.rd{font-size:16px}.resumo{font-size:16px}
+#lista li{font-size:15.5px}#lista small{font-size:14px}.lk{font-size:15px}.bd{font-size:13px}
+.vazio{font-size:16.5px}
+
+@media(max-width:1100px){.top{gap:10px}.top nav{gap:16px}.top nav a{font-size:16px}.top .marca b{font-size:26px}.top .marca img{width:54px;height:54px}.top .marca small{display:none}.acoes{gap:6px}#topZap{padding:10px 14px}}
+.dif div:first-child{padding-left:56px}.dif div:last-child{padding-right:56px}
+
+.btn,.btn.out,.btn.off{background:var(--verde);color:#fff;border:1.5px solid var(--verde)}
+.btn:hover,.btn.out:hover{background:var(--esc);border-color:var(--esc)}
+.cad{background:transparent!important;border:0!important;color:inherit}
+.mais{display:block;width:100%;background:var(--verde);color:#fff;text-decoration:none;border:0;border-radius:999px;padding:10px 14px;font-size:15px;font-weight:700}
+.mais:hover{background:var(--esc)}
+.qtd button{background:var(--verde);color:#fff;border-color:var(--verde)}
+.admbox.logado .btn,.admbox.logado .btn.out{background:var(--verde2);color:#fff;border-color:var(--verde2)}
+.admbox.logado .btn:hover,.admbox.logado .btn.out:hover{background:#4a9a5b;border-color:#4a9a5b}
 </style>
 </head>
 <body>
@@ -344,7 +379,7 @@ fieldset.pag{border:1px solid var(--linha);border-radius:10px;padding:6px 12px 8
 </div></div>
 
 <script>
-const CFG={whats:'',tel:'xxxx',horario:'xxxx',insta:'campsaboaria',hash:'3e8b771efdec77f457d527f5e9fe7d33b1f4c57173e1722b2027f0745cba3240',repo:'',
+const CFG={whats:'5519982913702',tel:'(19) 98291-3702',horario:'xxxx',insta:'campsaboaria',hash:'3e8b771efdec77f457d527f5e9fe7d33b1f4c57173e1722b2027f0745cba3240',repo:'',
  pagamentos:['Pix','Cartão'],
  frete:{
   ativo:false,
@@ -392,7 +427,7 @@ async function iniciar(){
  try{const r=await fetch('products.json',{cache:'no-cache'});if(r.ok)base=await r.json()}catch{}
  $('#topZap').href=zapUrl('Olá! Vim pelo site da CampSaboaria.');
  $('#lkZap').href=zapUrl();$('#lkZap').textContent=CFG.tel;$('#hor').textContent=CFG.horario;
- $('#lkInsta').href='https://instagram.com/'+CFG.insta;$('#lkInsta').textContent='@'+CFG.insta;
+ $('#lkInsta').href='https://www.instagram.com/'+CFG.insta;$('#lkInsta').textContent='@'+CFG.insta;
  $('#ano').textContent=new Date().getFullYear();
  $('#pTema').innerHTML=TEMAS.map(t=>`<option>${t}</option>`).join('');
  $('#pOc').innerHTML='<option value="">—</option>'+OCAS.map(t=>`<option>${t}</option>`).join('');
