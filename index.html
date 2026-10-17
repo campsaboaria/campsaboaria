@@ -345,12 +345,13 @@ label{font-size:16px}input,select,textarea{font-size:16px}
   <div id="sug"></div>
   <label for="pNome">Nome (ou nome do cliente, nos depoimentos)</label><input id="pNome" required>
   <label for="pDesc">Descrição (ou o texto do depoimento)</label><textarea id="pDesc" rows="3" placeholder="Escreva a descrição"></textarea>
+  <div class="linha" style="margin-top:8px"><button class="btn out sm" type="button" onclick="sugerirIA(true)">✨ Sugerir descrição com IA</button></div>
   <label for="pLocal">Onde vai aparecer</label>
   <select id="pLocal" onchange="aoLocal()">
    <option value="1">(1) - Nossos Produtos</option><option value="2">(2) - Sobre a marca</option><option value="3">(3) - Depoimentos dos clientes</option><option value="4">(4) - Em Velas</option><option value="5">(5) - Só em Temas</option>
   </select>
   <div id="gProd">
-   <div class="row2"><div><label for="pTema">Tema</label><select id="pTema" onchange="sugerir()"></select></div><div><label for="pOc">Ocasião (opcional)</label><select id="pOc"></select></div></div>
+   <div class="row2"><div><label for="pTema">Tema</label><select id="pTema" onchange="sugerir()"></select></div><div><label for="pOc">Ocasião (opcional)</label><select id="pOc" onchange="sugerir()"></select></div></div>
    <div class="row2"><div><label for="pPreco">Valor em moeda (R$)</label><input id="pPreco" inputmode="numeric" placeholder="R$ 0,00" oninput="mascara(this)" autocomplete="off"></div><div><label for="pPeso">Peso (g ou kg)</label><input id="pPeso" placeholder="Ex.: 250 g ou 0,5 kg" onblur="const g=parsePeso(this.value);if(g)this.value=fmtPeso(g)" autocomplete="off"></div></div>
   </div>
   <div class="row2"><div><label for="pStatus">Status</label><select id="pStatus" onchange="aoStatus()"><option value="publicado">Publicado</option><option value="agendado">Agendado</option><option value="rascunho">Rascunho</option></select></div>
@@ -362,7 +363,7 @@ label{font-size:16px}input,select,textarea{font-size:16px}
   <button class="btn out" type="button" onclick="descartar()">Descartar alterações</button>
   <button class="btn out" type="button" onclick="exportar()">Baixar cópia</button>
   <button class="btn out" type="button" onclick="sair()">Sair</button></div>
-  <p class="dica">As alterações só aparecem para os clientes depois de tocar em “Enviar alterações ao site”. <button type="button" class="lk" onclick="trocarToken()">Trocar token do GitHub</button></p>
+  <p class="dica">As alterações só aparecem para os clientes depois de tocar em “Enviar alterações ao site”. <button type="button" class="lk" onclick="trocarToken()">Trocar token do GitHub</button> <button type="button" class="lk" onclick="trocarChaveIA()">Trocar chave da IA</button></p>
   <h3 style="margin-top:18px;font-size:16px">Itens cadastrados</h3>
   <div class="row2"><div><label for="busca">Buscar por nome</label><input id="busca" placeholder="Digite o nome do produto" oninput="lista()" autocomplete="off"></div><div><label for="fTemaAdm">Filtrar por tema</label><select id="fTemaAdm" onchange="lista()"></select></div></div>
   <p class="dica" id="cont"></p><ul id="lista"></ul>
@@ -413,6 +414,7 @@ label{font-size:16px}input,select,textarea{font-size:16px}
 
 <script>
 const CFG={whats:'5519982913702',tel:'(19) 98291-3702',horario:'xxxx',insta:'campsaboaria',hash:'3e8b771efdec77f457d527f5e9fe7d33b1f4c57173e1722b2027f0745cba3240',repo:'',
+ ia:{url:'https://ollama.com/api/chat',modelo:'gpt-oss:120b'},
  pagamentos:['Pix','Cartão'],
  frete:{
   ativo:false,
@@ -581,7 +583,7 @@ const proxOrdem=()=>Math.max(0,...itens().map(p=>p.ordem||0))+1;
 function aoLocal(){const v=+$('#pLocal').value,prod=[1,4,5].includes(v);$('#gProd').hidden=!prod;if(v===4&&$('#pTema').value!=='Velas'&&!editId){$('#pTema').value='Velas';sugerir()}}
 function aoStatus(){$('#gData').hidden=$('#pStatus').value!=='agendado'}
 function reduzir(file){return new Promise((ok,err)=>{const im=new Image();im.onload=()=>{const s=Math.min(1,720/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);ok(c.toDataURL('image/jpeg',.78))};im.onerror=err;im.src=URL.createObjectURL(file)})}
-function aoEscolherFoto(){$('#sug').textContent='✨ Em breve: a IA vai sugerir a descrição a partir da foto.'}
+function aoEscolherFoto(){}
 async function salvar(e){
  e.preventDefault();
  const f=$('#pImg').files[0],loc=+$('#pLocal').value,prod=[1,4,5].includes(loc),preco=moedaVal($('#pPreco').value),peso=parsePeso($('#pPeso').value),status=$('#pStatus').value,data=$('#pData').value;
@@ -651,7 +653,39 @@ function marcarMenu(){let cur='inicio';const y=scrollY+130;SECS.forEach(id=>{con
 addEventListener('scroll',marcarMenu,{passive:true});
 const SUG={'Difusores':'Difusor de ambiente artesanal, feito com muito carinho e fragrância suave. Uma lembrancinha perfumada e elegante para casamentos, aniversários, batizados e chás de bebê.','Rosas':'Sabonete artesanal em formato de rosa, feito à mão com fragrância suave e embalagem personalizada. Uma lembrancinha delicada e perfumada para casamentos, aniversários, batizados e chás de bebê.','Girassol':'Sabonete artesanal em formato de girassol, feito à mão com cores vibrantes e fragrância suave. Uma lembrancinha alegre e cheia de charme para qualquer ocasião especial.','Flores':'Sabonete artesanal em formato de flor, feito à mão com fragrância suave e embalagem personalizada. Uma lembrancinha delicada para casamentos, aniversários, batizados e chás de bebê.','Corações':'Sabonete artesanal em formato de coração, feito à mão com fragrância suave e embalagem personalizada. Ideal como lembrancinha de casamentos, noivados, aniversários e datas românticas.','Álcool em gel':'Álcool em gel em embalagem personalizada, prático e perfumado. Uma lembrancinha útil e cheia de carinho para casamentos, aniversários, batizados e chás de bebê.','Sabonete líquido':'Sabonete líquido artesanal, perfumado e em embalagem personalizada. Uma lembrancinha útil e delicada para presentear convidados em qualquer ocasião.','Animais':'Sabonete artesanal em formato de bichinho, feito à mão com fragrância suave e embalagem personalizada. Uma lembrancinha fofa para chás de bebê, aniversários infantis e batizados.','Velas':'Vela artesanal perfumada, feita à mão com muito carinho e embalagem personalizada. Uma lembrancinha aconchegante para casamentos, aniversários, batizados e chás de bebê.','Frutas':'Sabonete artesanal em formato de fruta, feito à mão com cores e fragrância suave e embalagem personalizada. Uma lembrancinha criativa e perfumada para festas, eventos e brindes de agradecimento.','Outros':'Lembrancinha artesanal personalizada, feita à mão com muito carinho, qualidade e dedicação para tornar o seu momento ainda mais especial.'};
 let sugAnt='';
-function sugerir(){if([1,4,5].indexOf(+$('#pLocal').value)<0)return;const d=$('#pDesc'),t=SUG[$('#pTema').value];if(t&&(!d.value.trim()||d.value===sugAnt)){d.value=t;sugAnt=t}}
+const ocFrase=o=>!o||o==='Outras ocasiões'?'qualquer ocasião especial':o.toLowerCase();
+const textoPadrao=(t,o)=>{const b=(SUG[t]||'Lembrancinha artesanal personalizada, feita à mão com muito carinho.').split('. ')[0].replace(/\.$/,'');return b+'. Uma lembrancinha delicada e cheia de carinho, ideal para '+ocFrase(o)+'.'};
+let iaSeq=0;
+function preencher(t){if(!t)return;$('#pDesc').value=t;sugAnt=t}
+function trocarChaveIA(){const t=(prompt('Cole a chave da API do Ollama (deixe vazio para apagar a atual):')||'').trim();t?localStorage.setItem('cs_ia',t):localStorage.removeItem('cs_ia')}
+function sugerir(){sugerirIA(false)}
+async function sugerirIA(forcar){
+ if([1,4,5].indexOf(+$('#pLocal').value)<0)return;
+ const d=$('#pDesc'),sg=$('#sug'),nome=$('#pNome').value.trim(),tema=$('#pTema').value,oc=$('#pOc').value;
+ const manual=d.value.trim()&&d.value!==sugAnt;
+ if(!forcar&&manual)return;
+ if(forcar&&manual&&!confirm('Substituir o texto atual pela sugestão?'))return;
+ let key=localStorage.getItem('cs_ia');
+ if(!key&&forcar){key=(prompt('Cole a chave da API do Ollama (só precisa fazer isso uma vez neste celular):')||'').trim();if(key)localStorage.setItem('cs_ia',key)}
+ if(!key){preencher(textoPadrao(tema,oc));sg.textContent=forcar?'Sem chave da IA. Apliquei um texto padrão.':'Texto padrão aplicado. Toque em “Sugerir descrição com IA” para usar a IA.';return}
+ const n=++iaSeq,ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),30000);
+ sg.textContent='✨ Gerando sugestão com IA…';
+ try{
+  const r=await fetch(CFG.ia.url,{method:'POST',signal:ctl.signal,headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'},body:JSON.stringify({model:CFG.ia.modelo,stream:false,messages:[
+   {role:'system',content:'Você escreve descrições curtas de produtos para a CampSaboaria, loja de lembrancinhas personalizadas e artesanais (sabonetes, difusores, velas e outros). Responda somente com a descrição, em português do Brasil, com 2 a 3 frases, tom carinhoso e claro, sem emojis, sem preços e sem inventar ingredientes, medidas ou promessas.'},
+   {role:'user',content:'Produto: '+(nome||'(nome ainda não informado)')+'\nTema: '+tema+'\nOcasião: '+(oc||'não informada')+'\nEscreva a descrição.'}]})});
+  if(!r.ok)throw new Error(String(r.status));
+  const j=await r.json();let t=((j.message&&j.message.content)||'').trim().replace(/^["“]+|["”]+$/g,'');
+  if(!t)throw new Error('resposta vazia');
+  if(n!==iaSeq)return;
+  preencher(t);sg.textContent='✨ Sugestão da IA pronta. Você pode editar o texto.';
+ }catch(e){
+  if(n!==iaSeq)return;
+  if(/^(401|403)$/.test(e.message))localStorage.removeItem('cs_ia');
+  const m=e.name==='AbortError'?'demorou demais':/^\d+$/.test(e.message)?'erro '+e.message:'sem conexão ou bloqueio do navegador';
+  preencher(textoPadrao(tema,oc));sg.textContent='Não foi possível usar a IA ('+m+'). Apliquei um texto padrão.';
+ }finally{clearTimeout(tm)}
+}
 let selAtual=null;
 function abrirSeletor(sel){
  selAtual=sel;const lb=document.querySelector('label[for="'+sel.id+'"]');
