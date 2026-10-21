@@ -416,7 +416,7 @@ label{font-size:16px}input,select,textarea{font-size:16px}
 <div class="modal" id="modal" onclick="if(event.target===this)fechar()"><div class="box" role="dialog" aria-label="Carrinho">
  <div class="h"><h3>Meu pedido</h3><button class="x" onclick="fechar()" aria-label="Fechar">✕</button></div>
  <div id="itens"></div>
- <label for="cepCart">Calcular frete (CEP)</label>
+ <label for="cepCart">Calcular frete (CEP de destino)</label>
  <div class="linha" style="margin-top:4px"><input id="cepCart" inputmode="numeric" maxlength="9" placeholder="00000-000" style="max-width:170px" oninput="mascaraCep(this)" onkeydown="if(event.key==='Enter')calcular('cepCart')"><button class="btn out sm" type="button" onclick="calcular('cepCart')">Calcular</button></div>
  <div id="freteRes" class="dica"></div>
  <div id="freteOpc"></div>
@@ -424,6 +424,8 @@ label{font-size:16px}input,select,textarea{font-size:16px}
  <fieldset class="pag"><legend>Forma de pagamento</legend><div id="pagOpc"></div></fieldset>
  <div class="resumo"><div><span>Produtos selecionados</span><b id="rProd">R$ 0,00</b></div><div><span>Frete</span><b id="rFrete">—</b></div><div class="tot"><span>Total</span><b id="total">R$ 0,00</b></div></div>
  <label for="cNome">Seu nome</label><input id="cNome" autocomplete="name">
+ <label for="cEnd">Endereço de entrega (rua, número, bairro e complemento)</label>
+ <textarea id="cEnd" rows="2" placeholder="Ex: Rua das Flores, 123, Centro, apto 4"></textarea>
  <label for="cObs">Ocasião, data e o que você gosta (cor, perfume, tema)</label>
  <textarea id="cObs" rows="3" placeholder="Ex: Casamento em março, tema rosa e verde, perfume de lavanda"></textarea>
  <div class="linha"><button class="btn" onclick="enviar()">Finalizar pelo WhatsApp</button><button class="btn out" onclick="limpar()">Limpar</button></div>
@@ -458,6 +460,7 @@ const CFG={whats:'5519982913702',tel:'(19) 98291-3702',horario:'xxxx',insta:'cam
  pagamentos:['Pix','Cartão'],
  frete:{
   ativo:false,
+  cepOrigem:'13150690',
   cidadeLoja:'',
   valorLocal:null,
   retirada:false,
@@ -591,7 +594,7 @@ function pintarDet(){$('#dEssB').textContent='Essência: '+(det.ess||'escolher')
 function escolherDet(campo){abrirOpcoes(campo==='ess'?'Essência':'Cor',[{v:'',t:'Escolher depois'},...(campo==='ess'?ESSENCIAS:CORES).map(x=>({v:x,t:x}))],det[campo],v=>{det[campo]=v;pintarDet()})}
 function fecharDetalhe(){$('#detalhe').classList.remove('on')}
 const mapa=()=>Object.fromEntries(pub().map(p=>[p.id,p]));
-let fr={cep:ler('cs_cep',''),info:ler('cs_cepinfo',null),opc:'',pag:ler('cs_pag',''),cot:null};
+let fr={cep:ler('cs_cep',''),info:ler('cs_cepinfo',null),opc:'',pag:ler('cs_pag',''),cot:null,erro:''};
 const kVar=c=>c.id+'|'+(c.ess||'')+'|'+(c.cor||'');
 function add(id,ess='',cor=''){const k=id+'|'+ess+'|'+cor,i=cart.find(c=>c.k===k);if(i){i.q++;i.sel=true}else cart.push({k,id,ess,cor,q:1,sel:true});gravar('cs_cart',cart);pintarCarrinho();aviso('Adicionado ao carrinho ✓');$('.fab').animate([{transform:'scale(1.12)'},{transform:'scale(1)'}],200)}
 function mudar(i,d){const c=cart[i];if(!c)return;c.q+=d;if(c.q<1)cart.splice(i,1);gravar('cs_cart',cart);pintarCarrinho()}
@@ -648,10 +651,11 @@ function pintarCarrinho(){
   if(!t.s.length)txt+=' Marque ao menos um item do carrinho para ver o frete.';
   else if(f.pendente)txt+=' Toque em Calcular para ver as opções de envio.';
   else if(fv!=null)txt+=' Frete escolhido: '+(fv===0?'grátis':R(fv))+diasTxt(sel&&sel.prazo)+'.';
-  else txt+=' O valor do frete será combinado pelo WhatsApp.'}
+  else txt+=' O valor do frete será combinado pelo WhatsApp.';
+  if(f.cot&&f.cot.fonte==='tabela'&&fr.erro)txt+=' (Cálculo automático indisponível: '+fr.erro+'.)'}
  $('#freteRes').textContent=txt;$('#freteLoja').textContent=txt;
  ['cepLoja','cepCart'].forEach(id=>{const e=$('#'+id);if(document.activeElement!==e)e.value=fr.cep?fr.cep.slice(0,5)+'-'+fr.cep.slice(5):''});
- $('#cNome').value=ler('cs_nome','');$('#cObs').value=ler('cs_obs','');
+ $('#cNome').value=ler('cs_nome','');$('#cEnd').value=ler('cs_end','');$('#cObs').value=ler('cs_obs','');
 }
 $('#freteOpc').addEventListener('change',e=>{fr.opc=e.target.value;pintarCarrinho()});
 $('#pagOpc').addEventListener('change',e=>{fr.pag=e.target.value;gravar('cs_pag',fr.pag)});
@@ -663,13 +667,14 @@ async function cotar(){
  if(sbOk()&&SB.funcFrete){
   $('#freteRes').textContent='Calculando o frete…';
   try{
-   const r=await fetch(SB.url+'/functions/v1/'+SB.funcFrete,{method:'POST',headers:{apikey:SB.chave,'Content-Type':'application/json'},body:JSON.stringify({cep:fr.cep,itens:t.s.map(c=>({nome:t.m[c.id].nome,qtd:c.q,peso_g:t.m[c.id].peso||0,tags:t.m[c.id].tags||[]}))})});
-   const j=await r.json();
-   if(!r.ok||j.erro)throw new Error(j.erro||String(r.status));
+   const r=await fetch(SB.url+'/functions/v1/'+SB.funcFrete,{method:'POST',headers:{apikey:SB.chave,'Content-Type':'application/json'},body:JSON.stringify({cep:fr.cep,origem:(CFG.frete||{}).cepOrigem,itens:t.s.map(c=>({nome:t.m[c.id].nome,qtd:c.q,peso_g:t.m[c.id].peso||0,tags:t.m[c.id].tags||[]}))})});
+   let j={};try{j=await r.json()}catch{}
+   if(!r.ok||j.erro)throw new Error(j.erro||(r.status===404?'serviço de frete ainda não instalado':r.status===401||r.status===403?'acesso negado ao serviço de frete':'erro '+r.status));
    if(!j.opcoes||!j.opcoes.length)throw new Error('sem opções de envio');
    cot={chave,fonte:'api',caixa:j.caixa,opcoes:j.opcoes.map((o,i)=>({id:'s'+i,nome:o.nome,valor:Number(o.valor),prazo:o.prazo||null}))};
    if((CFG.frete||{}).retirada)cot.opcoes.push({id:'ret',nome:'Retirar na loja',valor:0,prazo:null});
-  }catch(e){aviso('Não foi possível consultar o frete agora ('+e.message+'). Usei a tabela da loja.',1)}
+   fr.erro='';
+  }catch(e){fr.erro=e.message==='Failed to fetch'?'sem conexão com o serviço de frete':e.message;aviso('Frete automático indisponível: '+fr.erro+'.',1)}
  }
  if(!cot)cot={chave,fonte:'tabela',caixa:null,opcoes:opcoesFrete(t)};
  fr.cot=cot;fr.opc=cot.opcoes[0]?cot.opcoes[0].id:'';
@@ -685,6 +690,7 @@ async function calcular(id){
  if(totais().s.length)await cotar();else aviso('CEP encontrado ✓ Adicione produtos ao carrinho para ver o frete.');
 }
 $('#cNome').oninput=e=>gravar('cs_nome',e.target.value);
+$('#cEnd').oninput=e=>gravar('cs_end',e.target.value);
 $('#cObs').oninput=e=>gravar('cs_obs',e.target.value);
 function abrir(){$('#modal').classList.add('on')}
 function fechar(){$('#modal').classList.remove('on')}
@@ -693,19 +699,17 @@ function enviar(){
  if(!fr.pag)return aviso('Escolha a forma de pagamento.',1);
  const sem=t.s.filter(c=>!c.ess||!c.cor);
  if(sem.length&&!confirm('Estes itens estão sem essência ou cor: '+sem.map(c=>t.m[c.id].nome).join(', ')+'. Enviar assim mesmo?'))return;
+ const f=freteAtual(t);
+ if(f.pendente&&!confirm('O frete ainda não foi calculado. Enviar assim mesmo, com o frete a combinar?'))return;
  if(!CFG.whats)return alert('O WhatsApp da CampSaboaria ainda será informado aqui. Em breve!');
- const f=freteAtual(t),sel=f.sel,fv=sel&&sel.valor!=null?sel.valor:null,cx=f.cot&&f.cot.caixa;
- let x='Olá! Gostaria de fazer um pedido'+($('#cNome').value?' (nome: '+$('#cNome').value+')':'')+':\n\n';
- t.s.forEach(c=>{const p=t.m[c.id];x+=`• ${c.q}x ${p.nome}${c.ess?' – Essência: '+c.ess:''}${c.cor?' – Cor: '+c.cor:''}${p.preco>0?' ('+R(p.preco)+' cada) = '+R(c.q*p.preco):''}
-`});
- x+='\nSubtotal: '+R(t.sub);
- if(t.peso!=null)x+='\nPeso dos produtos: '+fmtPeso(t.peso);
- x+='\nEntrega: '+(sel?sel.nome+diasTxt(sel.prazo):'a combinar')+(fr.info?' – CEP '+fr.cep.slice(0,5)+'-'+fr.cep.slice(5)+' ('+fr.info.cidade+'/'+fr.info.uf+')':' – CEP não informado');
- x+='\nFrete: '+(fv!=null?(fv===0?'grátis':R(fv)):'a combinar');
- if(cx)x+='\nCaixa estimada: '+cx.comprimento+' x '+cx.largura+' x '+cx.altura+' cm';
- x+='\nPagamento: '+fr.pag;
- x+='\nTotal: '+R(t.sub+(fv||0))+(fv==null?' + frete a combinar':'');
- if($('#cObs').value)x+='\n\nObservações: '+$('#cObs').value;
+ const sel=f.sel,fv=sel&&sel.valor!=null?sel.valor:null,cx=f.cot&&f.cot.caixa;
+ const site=location.origin+location.pathname,nome=$('#cNome').value.trim(),end=$('#cEnd').value.trim(),obs=$('#cObs').value.trim();
+ let x='*NOVO PEDIDO - CampSaboaria*\n'+(nome?'Cliente: '+nome+'\n':'')+'Data: '+new Date().toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})+'\n\n*ITENS*\n';
+ t.s.forEach((c,n)=>{const p=t.m[c.id];
+  x+=(n+1)+') '+p.nome+'\n   Essência: '+(c.ess||'a definir')+'\n   Cor: '+(c.cor||'a definir')+'\n   Quantidade: '+c.q+(p.preco>0?' x '+R(p.preco)+' = '+R(c.q*p.preco):'')+'\n'+(p.peso>0?'   Peso: '+fmtPeso(p.peso)+' cada\n':'')+'   Ver produto: '+site+'#item-'+p.id+'\n'});
+ x+='\n*VALORES*\nSubtotal dos produtos: '+R(t.sub)+'\nFrete'+(sel?' ('+sel.nome+diasTxt(sel.prazo)+')':'')+': '+(fv!=null?(fv===0?'grátis':R(fv)):'a combinar')+'\n*TOTAL: '+R(t.sub+(fv||0))+(fv==null?' + frete a combinar':'')+'*\n';
+ x+='\n*ENTREGA*\nCEP de destino: '+(fr.info?fr.cep.slice(0,5)+'-'+fr.cep.slice(5)+' ('+fr.info.cidade+'/'+fr.info.uf+')':'não informado')+'\n'+(end?'Endereço: '+end+'\n':'')+(t.peso!=null?'Peso total dos produtos: '+fmtPeso(t.peso)+'\n':'')+(cx?'Caixa estimada: '+cx.comprimento+' x '+cx.largura+' x '+cx.altura+' cm, '+fmtPeso(Math.round(cx.peso_kg*1000))+'\n':'')+'Envio a partir do CEP '+(((CFG.frete||{}).cepOrigem||'13150690').replace(/^(\d{5})(\d{3})$/,'$1-$2'))+'\n';
+ x+='\n*PAGAMENTO*\n'+fr.pag+'\n'+(obs?'\n*OBSERVAÇÕES*\n'+obs+'\n':'');
  window.open(zapUrl(x),'_blank');
 }
 function abrirAdmin(){const a=$('#admin');a.hidden=false;a.scrollIntoView({behavior:'smooth'});if(!$('#login').hidden)setTimeout(()=>$('#email').focus({preventScroll:true}),500)}

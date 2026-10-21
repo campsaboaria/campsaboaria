@@ -14,6 +14,7 @@ type Item = { nome: string; qtd: number; peso_g: number; tags: string[] };
 type Caixa = { comprimento: number; largura: number; altura: number };
 
 const TAGS_OK = ['#palito', '#cartão', '#frasco'];
+const CEP_ORIGEM_PADRAO = '13150690';
 const limitar = (n: number, min: number, max: number) => Math.min(max, Math.max(min, Math.round(n)));
 
 function estimar(itens: Item[]): Caixa {
@@ -70,11 +71,10 @@ async function estimarComIA(itens: Item[], pesoKg: number): Promise<Caixa> {
   return caixa;
 }
 
-async function cotar(cep: string, c: Caixa, pesoKg: number) {
+async function cotar(cep: string, origem: string, c: Caixa, pesoKg: number) {
   const token = Deno.env.get('ME_TOKEN');
-  const origem = (Deno.env.get('CEP_ORIGEM') || '').replace(/\D/g, '');
   const email = Deno.env.get('ME_EMAIL') || 'contato@exemplo.com';
-  if (!token || origem.length !== 8) throw new Error('frete não configurado');
+  if (!token) throw new Error('falta o token do Melhor Envio (ME_TOKEN)');
   const base = Deno.env.get('ME_URL') || 'https://melhorenvio.com.br';
   const r = await fetch(`${base}/api/v2/me/shipment/calculate`, {
     method: 'POST',
@@ -107,14 +107,16 @@ async function cotar(cep: string, c: Caixa, pesoKg: number) {
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
-  const origem = req.headers.get('origin');
-  if (origem && origem !== ORIGEM) return json({ erro: 'origem não permitida' }, 403);
+  const origemReq = req.headers.get('origin');
+  if (origemReq && origemReq !== ORIGEM) return json({ erro: 'origem não permitida' }, 403);
   const chaveSite = Deno.env.get('SITE_KEY');
   if (chaveSite && req.headers.get('apikey') !== chaveSite) return json({ erro: 'chave inválida' }, 401);
   try {
     const body = await req.json();
     const cep = String(body.cep || '').replace(/\D/g, '');
     if (cep.length !== 8) return json({ erro: 'CEP inválido' }, 400);
+    const origem = (Deno.env.get('CEP_ORIGEM') || String(body.origem || '') || CEP_ORIGEM_PADRAO).replace(/\D/g, '');
+    if (origem.length !== 8) return json({ erro: 'CEP de origem inválido' }, 400);
     if (!Array.isArray(body.itens) || body.itens.length < 1 || body.itens.length > 50) return json({ erro: 'itens inválidos' }, 400);
     const itens: Item[] = body.itens.map((i: any) => ({
       nome: String(i.nome || '').slice(0, 80),
@@ -133,9 +135,9 @@ Deno.serve(async (req) => {
       fonte = 'estimativa';
       caixa = estimar(itens);
     }
-    const opcoes = await cotar(cep, caixa, pesoKg);
+    const opcoes = await cotar(cep, origem, caixa, pesoKg);
     if (!opcoes.length) return json({ erro: 'nenhuma opção de envio para este CEP' }, 422);
-    return json({ caixa: { ...caixa, peso_kg: Math.round(pesoKg * 100) / 100, fonte }, opcoes });
+    return json({ origem, caixa: { ...caixa, peso_kg: Math.round(pesoKg * 100) / 100, fonte }, opcoes });
   } catch (e) {
     return json({ erro: String((e as Error).message || e) }, 400);
   }
