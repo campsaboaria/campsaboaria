@@ -278,6 +278,11 @@ label{font-size:16px}input,select,textarea{font-size:16px}
 .fim+.fim{margin-top:0;padding-top:0}
 .fim .lk{color:#fff;font-size:13px}
 #visitas{opacity:.75;font-size:12px}
+
+.ped{border:1.5px solid #7fae88;border-radius:12px;padding:12px 14px;margin-top:12px;background:#243f2b;font-size:15px}
+.ped .tt{font-size:22px;font-weight:800;color:#fff;margin-bottom:6px}
+.ped p{margin:6px 0}.ped .ok{color:#9be3a8;font-weight:700}.ped .bad{color:#ff9c94;font-weight:700}
+.itped{margin:6px 0 6px 18px}.itped li{margin:4px 0}
 </style>
 </head>
 <body>
@@ -394,7 +399,12 @@ label{font-size:16px}input,select,textarea{font-size:16px}
   <div class="linha"><button class="btn out" type="button" onclick="exportar()">Baixar cópia</button>
   <button class="btn out" type="button" onclick="sair()">Sair</button></div>
   <p class="dica">Tudo o que você salva aparece na hora para os clientes. <button type="button" class="lk" onclick="trocarChaveIA()">Trocar chave da IA</button></p>
-  <h3 style="margin-top:18px;font-size:16px">Itens cadastrados</h3>
+  <h3 style="margin-top:18px;font-size:16px">Conferir pedido</h3>
+  <div class="row2"><div><label for="pedCod">Código do pedido</label><input id="pedCod" placeholder="Ex: CS-7K3F9Q" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();conferirPedido()}"></div>
+  <div><label for="pedTotal">Total que veio na mensagem (opcional)</label><input id="pedTotal" inputmode="numeric" placeholder="R$ 0,00" oninput="mascara(this)" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();conferirPedido()}"></div></div>
+  <div class="linha"><button class="btn" type="button" onclick="conferirPedido()">Conferir</button><button class="btn out" type="button" onclick="listarPedidos()">Últimos pedidos</button></div>
+  <div id="pedRes"></div>
+  <h3 style="margin-top:22px;font-size:16px">Itens cadastrados</h3>
   <div class="row2"><div><label for="busca">Buscar por nome</label><input id="busca" placeholder="Digite o nome do produto" oninput="lista()" autocomplete="off"></div><div><label for="fTemaAdm">Filtrar por tema</label><select id="fTemaAdm" onchange="lista()"></select></div></div>
   <p class="dica" id="cont"></p><ul id="lista"></ul>
  </form>
@@ -458,16 +468,9 @@ label{font-size:16px}input,select,textarea{font-size:16px}
 const CFG={whats:'5519982913702',tel:'(19) 98291-3702',horario:'xxxx',insta:'campsaboaria',sb:{url:'https://nulrdbxzgxuaoufzymqo.supabase.co',chave:'sb_publishable_eGBjF70N61vG-slu5NXO-A_9I8q4e4P',bucket:'produtos',funcFrete:'frete'},
  ia:{url:'https://ollama.com/api/chat',modelo:'gpt-oss:120b'},
  pagamentos:['Pix','Cartão'],
- frete:{
-  ativo:false,
-  cepOrigem:'13150690',
-  cidadeLoja:'',
-  valorLocal:null,
-  retirada:false,
-  gratisAcima:0,
-  padrao:[],
-  tabela:{}
- }};
+ frete:{cepOrigem:'13150690',retirada:false},
+ pedido:{exigir:false}
+};
 
 const TEMAS=['Difusores','Rosas','Girassol','Flores','Corações','Álcool em gel','Sabonete líquido','Animais','Velas','Frutas','Outros'];
 const ICO={'Difusores':'🌿','Rosas':'🌹','Girassol':'🌻','Flores':'🌸','Corações':'❤️','Álcool em gel':'🧴','Sabonete líquido':'💧','Animais':'🐻','Velas':'🕯️','Frutas':'🍓','Outros':'🛍️'};
@@ -616,15 +619,9 @@ function totais(){
 }
 const chaveCot=t=>fr.cep+'|'+t.s.map(c=>c.id+':'+c.q).sort().join(',');
 function opcoesFrete(t){
- const F=CFG.frete||{},o=[];if(!t.s.length)return o;
- if(F.ativo&&fr.info&&t.peso!=null){
-  let v=null;
-  if(F.cidadeLoja&&F.valorLocal!=null&&norm2(fr.info.cidade)===norm2(F.cidadeLoja))v=F.valorLocal;
-  else{const tab=(F.tabela||{})[fr.info.uf]||F.padrao||[],f=tab.find(x=>t.peso<=x[0]);if(f)v=f[1]}
-  if(v!=null){if(F.gratisAcima>0&&t.sub>=F.gratisAcima)v=0;o.push({id:'ent',nome:'Entrega'+(v===0?' (frete grátis)':''),valor:v,prazo:null})}
- }
- if(!o.length)o.push({id:'comb',nome:'Frete a combinar pelo WhatsApp',valor:null,prazo:null});
- if(F.retirada)o.push({id:'ret',nome:'Retirar na loja',valor:0,prazo:null});
+ const o=[];if(!t.s.length)return o;
+ o.push({id:'comb',nome:'Frete a combinar pelo WhatsApp',valor:null,prazo:null});
+ if((CFG.frete||{}).retirada)o.push({id:'ret',nome:'Retirar na loja',valor:0,prazo:null});
  return o;
 }
 function freteAtual(t){
@@ -652,7 +649,7 @@ function pintarCarrinho(){
   else if(f.pendente)txt+=' Toque em Calcular para ver as opções de envio.';
   else if(fv!=null)txt+=' Frete escolhido: '+(fv===0?'grátis':R(fv))+diasTxt(sel&&sel.prazo)+'.';
   else txt+=' O valor do frete será combinado pelo WhatsApp.';
-  if(f.cot&&f.cot.fonte==='tabela'&&fr.erro)txt+=' (Cálculo automático indisponível: '+fr.erro+'.)'}
+  if(f.cot&&f.cot.fonte==='combinar'&&fr.erro)txt+=' (Cálculo automático indisponível: '+fr.erro+'.)'}
  $('#freteRes').textContent=txt;$('#freteLoja').textContent=txt;
  ['cepLoja','cepCart'].forEach(id=>{const e=$('#'+id);if(document.activeElement!==e)e.value=fr.cep?fr.cep.slice(0,5)+'-'+fr.cep.slice(5):''});
  $('#cNome').value=ler('cs_nome','');$('#cEnd').value=ler('cs_end','');$('#cObs').value=ler('cs_obs','');
@@ -667,16 +664,16 @@ async function cotar(){
  if(sbOk()&&SB.funcFrete){
   $('#freteRes').textContent='Calculando o frete…';
   try{
-   const r=await fetch(SB.url+'/functions/v1/'+SB.funcFrete,{method:'POST',headers:{apikey:SB.chave,'Content-Type':'application/json'},body:JSON.stringify({cep:fr.cep,origem:(CFG.frete||{}).cepOrigem,itens:t.s.map(c=>({nome:t.m[c.id].nome,qtd:c.q,peso_g:t.m[c.id].peso||0,tags:t.m[c.id].tags||[]}))})});
+   const r=await fetch(SB.url+'/functions/v1/'+SB.funcFrete,{method:'POST',headers:{apikey:SB.chave,'Content-Type':'application/json'},body:JSON.stringify({acao:'cotar',cep:fr.cep,origem:(CFG.frete||{}).cepOrigem,itens:t.s.map(c=>({id:c.id,qtd:c.q,ess:c.ess||'',cor:c.cor||''}))})});
    let j={};try{j=await r.json()}catch{}
    if(!r.ok||j.erro)throw new Error(j.erro||(r.status===404?'serviço de frete ainda não instalado':r.status===401||r.status===403?'acesso negado ao serviço de frete':'erro '+r.status));
    if(!j.opcoes||!j.opcoes.length)throw new Error('sem opções de envio');
-   cot={chave,fonte:'api',caixa:j.caixa,opcoes:j.opcoes.map((o,i)=>({id:'s'+i,nome:o.nome,valor:Number(o.valor),prazo:o.prazo||null}))};
+   cot={chave,fonte:'api',token:j.cotacao,caixa:j.caixa,opcoes:j.opcoes.map((o,i)=>({id:'s'+i,nome:o.nome,valor:Number(o.valor),prazo:o.prazo||null}))};
    if((CFG.frete||{}).retirada)cot.opcoes.push({id:'ret',nome:'Retirar na loja',valor:0,prazo:null});
    fr.erro='';
   }catch(e){fr.erro=e.message==='Failed to fetch'?'sem conexão com o serviço de frete':e.message;aviso('Frete automático indisponível: '+fr.erro+'.',1)}
  }
- if(!cot)cot={chave,fonte:'tabela',caixa:null,opcoes:opcoesFrete(t)};
+ if(!cot)cot={chave,fonte:'combinar',token:'',caixa:null,opcoes:opcoesFrete(t)};
  fr.cot=cot;fr.opc=cot.opcoes[0]?cot.opcoes[0].id:'';
  pintarCarrinho();
  if(cot.fonte==='api')aviso('Frete calculado ✓');
@@ -694,7 +691,27 @@ $('#cEnd').oninput=e=>gravar('cs_end',e.target.value);
 $('#cObs').oninput=e=>gravar('cs_obs',e.target.value);
 function abrir(){$('#modal').classList.add('on')}
 function fechar(){$('#modal').classList.remove('on')}
-function enviar(){
+let enviando=false;
+const c2=n=>Math.round(n*100)/100;
+function montarMensagem(d,ok){
+ const L=[],site=location.origin+location.pathname;
+ if(ok)L.push('*PEDIDO Nº '+d.codigo+'*','*TOTAL: '+R(d.total)+(d.frete?'':' + frete a combinar')+'*','Valores registrados no sistema com o código acima. Em caso de divergência, vale o valor do sistema.','');
+ else L.push('*PEDIDO SEM CÓDIGO - VALORES NÃO VERIFICADOS*','Confirmar os valores no atendimento.','');
+ if(d.nome)L.push('Cliente: '+d.nome);
+ L.push('Data: '+new Date(d.criado||Date.now()).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}),'','*ITENS*');
+ d.itens.forEach((i,n)=>{L.push((n+1)+') '+i.nome,'   Essência: '+(i.ess||'a definir'),'   Cor: '+(i.cor||'a definir'),'   Quantidade: '+i.qtd+' x '+R(i.preco)+' = '+R(i.total!=null?i.total:i.qtd*i.preco));if(i.peso_g>0)L.push('   Peso: '+fmtPeso(i.peso_g)+' cada');L.push('   Ver produto: '+site+'#item-'+i.id)});
+ L.push('','*VALORES*','Subtotal dos produtos: '+R(d.subtotal),'Frete'+(d.frete?' ('+d.frete.nome+diasTxt(d.frete.prazo)+')':'')+': '+(d.frete?(d.frete.valor===0?'grátis':R(d.frete.valor)):'a combinar'),'*TOTAL: '+R(d.total)+(d.frete?'':' + frete a combinar')+'*','','*ENTREGA*');
+ L.push('CEP de destino: '+(d.cep?d.cep.slice(0,5)+'-'+d.cep.slice(5)+(d.destino?' ('+d.destino+')':''):'não informado'));
+ if(d.endereco)L.push('Endereço: '+d.endereco);
+ if(d.peso>0)L.push('Peso total dos produtos: '+fmtPeso(d.peso));
+ const cx=d.caixa;if(cx&&cx.comprimento)L.push('Caixa estimada: '+cx.comprimento+' x '+cx.largura+' x '+cx.altura+' cm, '+fmtPeso(Math.round(cx.peso_kg*1000)));
+ L.push('Envio a partir do CEP '+String(d.origem||(CFG.frete||{}).cepOrigem||'13150690').replace(/^(\d{5})(\d{3})$/,'$1-$2'),'','*PAGAMENTO*',d.pagamento||'a combinar');
+ if(d.obs)L.push('','*OBSERVAÇÕES*',d.obs);
+ return L.join('\n');
+}
+const dDoServidor=p=>({codigo:p.codigo,criado:p.criado,nome:p.nome,endereco:p.endereco,cep:p.cep,destino:p.destino,pagamento:p.pagamento,obs:p.observacoes,itens:p.itens,subtotal:p.subtotal,frete:p.frete_nome?{nome:p.frete_nome,valor:p.frete_valor,prazo:p.frete_prazo}:null,total:p.total,peso:p.peso_g,caixa:p.caixa,origem:p.origem});
+async function enviar(){
+ if(enviando)return;
  const t=totais();if(!t.s.length)return aviso('Marque ao menos um item do carrinho.',1);
  if(!fr.pag)return aviso('Escolha a forma de pagamento.',1);
  const sem=t.s.filter(c=>!c.ess||!c.cor);
@@ -702,15 +719,26 @@ function enviar(){
  const f=freteAtual(t);
  if(f.pendente&&!confirm('O frete ainda não foi calculado. Enviar assim mesmo, com o frete a combinar?'))return;
  if(!CFG.whats)return alert('O WhatsApp da CampSaboaria ainda será informado aqui. Em breve!');
- const sel=f.sel,fv=sel&&sel.valor!=null?sel.valor:null,cx=f.cot&&f.cot.caixa;
- const site=location.origin+location.pathname,nome=$('#cNome').value.trim(),end=$('#cEnd').value.trim(),obs=$('#cObs').value.trim();
- let x='*NOVO PEDIDO - CampSaboaria*\n'+(nome?'Cliente: '+nome+'\n':'')+'Data: '+new Date().toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})+'\n\n*ITENS*\n';
- t.s.forEach((c,n)=>{const p=t.m[c.id];
-  x+=(n+1)+') '+p.nome+'\n   Essência: '+(c.ess||'a definir')+'\n   Cor: '+(c.cor||'a definir')+'\n   Quantidade: '+c.q+(p.preco>0?' x '+R(p.preco)+' = '+R(c.q*p.preco):'')+'\n'+(p.peso>0?'   Peso: '+fmtPeso(p.peso)+' cada\n':'')+'   Ver produto: '+site+'#item-'+p.id+'\n'});
- x+='\n*VALORES*\nSubtotal dos produtos: '+R(t.sub)+'\nFrete'+(sel?' ('+sel.nome+diasTxt(sel.prazo)+')':'')+': '+(fv!=null?(fv===0?'grátis':R(fv)):'a combinar')+'\n*TOTAL: '+R(t.sub+(fv||0))+(fv==null?' + frete a combinar':'')+'*\n';
- x+='\n*ENTREGA*\nCEP de destino: '+(fr.info?fr.cep.slice(0,5)+'-'+fr.cep.slice(5)+' ('+fr.info.cidade+'/'+fr.info.uf+')':'não informado')+'\n'+(end?'Endereço: '+end+'\n':'')+(t.peso!=null?'Peso total dos produtos: '+fmtPeso(t.peso)+'\n':'')+(cx?'Caixa estimada: '+cx.comprimento+' x '+cx.largura+' x '+cx.altura+' cm, '+fmtPeso(Math.round(cx.peso_kg*1000))+'\n':'')+'Envio a partir do CEP '+(((CFG.frete||{}).cepOrigem||'13150690').replace(/^(\d{5})(\d{3})$/,'$1-$2'))+'\n';
- x+='\n*PAGAMENTO*\n'+fr.pag+'\n'+(obs?'\n*OBSERVAÇÕES*\n'+obs+'\n':'');
- window.open(zapUrl(x),'_blank');
+ const sel=f.sel,fvLocal=sel&&sel.valor!=null?sel.valor:null,totalLocal=c2(t.sub+(fvLocal||0));
+ const nome=$('#cNome').value.trim(),end=$('#cEnd').value.trim(),obs=$('#cObs').value.trim(),destino=fr.info?fr.info.cidade+'/'+fr.info.uf:'';
+ let d=null,ok=false,motivo='';
+ enviando=true;aviso('Registrando o pedido…');
+ if(sbOk()&&SB.funcFrete){
+  try{
+   const r=await fetch(SB.url+'/functions/v1/'+SB.funcFrete,{method:'POST',headers:{apikey:SB.chave,'Content-Type':'application/json'},body:JSON.stringify({acao:'pedido',cep:fr.cep||'',destino,nome,endereco:end,obs,pagamento:fr.pag,cotacao:f.cot?f.cot.token:'',frete_escolhido:sel?sel.nome:'',retirada:!!(sel&&sel.id==='ret'),itens:t.s.map(c=>({id:c.id,qtd:c.q,ess:c.ess||'',cor:c.cor||''}))})});
+   let j={};try{j=await r.json()}catch{}
+   if(!r.ok||j.erro)throw new Error(j.erro||(r.status===404?'serviço de pedidos ainda não instalado':'erro '+r.status));
+   d=dDoServidor(j);ok=true;
+  }catch(e){motivo=e.message==='Failed to fetch'?'sem conexão com o serviço de pedidos':e.message}
+ }else motivo='serviço de pedidos não configurado';
+ enviando=false;
+ if(!ok){
+  if((CFG.pedido||{}).exigir)return alert('Não foi possível registrar o pedido agora ('+motivo+'). Tente de novo em instantes.');
+  d={codigo:'',criado:new Date().toISOString(),nome,endereco:end,cep:fr.cep||'',destino,pagamento:fr.pag,obs,itens:t.s.map(c=>{const p=t.m[c.id];return{id:p.id,nome:p.nome,ess:c.ess,cor:c.cor,qtd:c.q,preco:p.preco,peso_g:p.peso,total:c2(c.q*p.preco)}}),subtotal:c2(t.sub),frete:fvLocal!=null?{nome:sel.nome,valor:fvLocal,prazo:sel.prazo}:null,total:totalLocal,peso:t.peso||0,caixa:f.cot&&f.cot.caixa,origem:''};
+ }else if(Math.abs(d.total-totalLocal)>0.005&&!confirm('O sistema atualizou os valores do pedido. Novo total: '+R(d.total)+' (na tela estava '+R(totalLocal)+'). Enviar com o valor do sistema?'))return;
+ const url=zapUrl(montarMensagem(d,ok)),w=window.open(url,'_blank');
+ if(!w)location.href=url;
+ if(ok)aviso('Pedido '+d.codigo+' registrado ✓');
 }
 function abrirAdmin(){const a=$('#admin');a.hidden=false;a.scrollIntoView({behavior:'smooth'});if(!$('#login').hidden)setTimeout(()=>$('#email').focus({preventScroll:true}),500)}
 async function entrar(){
@@ -790,6 +818,38 @@ function lista(){
  const q=norm2($('#busca').value),ft=$('#fTemaAdm').value,todos=itens().sort((a,b)=>a.loc-b.loc||a.ordem-b.ordem),l=todos.filter(p=>(!q||norm2(p.nome).includes(q))&&(!ft||p.tema===ft));
  $('#cont').textContent=todos.length?l.length+' de '+todos.length+' itens':'';
  $('#lista').innerHTML=l.length?l.map(p=>`<li>${p.img?`<img src="${esc(p.img)}" alt="">`:''}<span><b>${esc(p.nome)}</b><small><span class="bd">[Loc: ${p.loc} - ${LOCS[p.loc]}]</span><span class="bd st-${p.status}">${stTxt(p)}</span></small><small>${[p.tema,p.ocasiao,p.preco>0?R(p.preco):'',p.peso>0?fmtPeso(p.peso):'',(p.tags||[]).join(' '),'ordem '+p.ordem].filter(Boolean).map(esc).join(' · ')}</small></span><button type="button" class="btn sm" onclick="editar('${p.id}')">Editar</button><button type="button" class="lk" style="color:#b3261e" onclick="excluir('${p.id}')">Excluir</button></li>`).join(''):'<li>'+(todos.length?'Nenhum item encontrado.':'Nenhum item cadastrado ainda.')+'</li>'
+}
+async function conferirPedido(){
+ const cod=$('#pedCod').value.trim().toUpperCase().replace(/\s/g,'');
+ if(!/^CS-[A-Z0-9]{6}$/.test(cod))return aviso('Digite o código no formato CS-XXXXXX.',1);
+ const r=await sbFetch('/rest/v1/pedidos?select=*&codigo=eq.'+encodeURIComponent(cod));
+ if(!r.ok)return aviso('Não foi possível consultar ('+await erroHttp(r)+').',1);
+ const l=await r.json();
+ if(!l.length){$('#pedRes').innerHTML='<div class="ped"><p class="bad">Nenhum pedido com o código '+esc(cod)+'. Não confie nos valores da mensagem.</p></div>';return}
+ mostrarPedido(l[0]);
+}
+function mostrarPedido(p){
+ const inf=moedaVal($('#pedTotal').value);
+ const comp=inf?(Math.abs(inf-Number(p.total))<0.005?'<p class="ok">✔ O total da mensagem ('+R(inf)+') confere com o sistema.</p>':'<p class="bad">✖ NÃO CONFERE: a mensagem diz '+R(inf)+', mas o sistema registrou '+R(p.total)+'.</p>'):'';
+ const it=(p.itens||[]).map(i=>`<li>${i.qtd} x ${esc(i.nome)}${i.ess?' · '+esc(i.ess):''}${i.cor?' · '+esc(i.cor):''} — ${R(i.preco)} cada = ${R(i.total)}</li>`).join('');
+ $('#pedRes').innerHTML=`<div class="ped"><div class="tt">${esc(p.codigo)} · ${R(p.total)}</div>${comp}
+ <p><span class="bd st-${p.status==='confirmado'?'publicado':p.status==='cancelado'?'rascunho':'agendado'}">${esc(p.status)}</span> ${new Date(p.criado).toLocaleString('pt-BR')}</p>
+ <p><b>Cliente:</b> ${esc(p.nome||'—')}<br><b>CEP:</b> ${esc(p.cep||'—')} ${esc(p.destino||'')}<br><b>Endereço:</b> ${esc(p.endereco||'—')}<br><b>Pagamento:</b> ${esc(p.pagamento||'—')}</p>
+ <ul class="itped">${it}</ul>
+ <p>Subtotal: ${R(p.subtotal)}<br>Frete: ${p.frete_valor!=null?esc(p.frete_nome||'')+' — '+R(p.frete_valor)+(p.frete_prazo?' · '+p.frete_prazo+' dias úteis':''):'a combinar'}<br><b>Total: ${R(p.total)}</b></p>
+ ${p.observacoes?'<p><b>Observações:</b> '+esc(p.observacoes)+'</p>':''}
+ <div class="linha"><button class="btn sm" type="button" onclick="statusPedido('${p.id}','confirmado')">Marcar como confirmado</button><button class="btn out sm" type="button" onclick="statusPedido('${p.id}','cancelado')">Cancelar pedido</button></div></div>`;
+}
+async function statusPedido(id,st){
+ const r=await sbFetch('/rest/v1/pedidos?id=eq.'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:st})});
+ if(!r.ok)return aviso('Não foi possível atualizar ('+await erroHttp(r)+').',1);
+ aviso('Pedido '+st+' ✓');conferirPedido();
+}
+async function listarPedidos(){
+ const r=await sbFetch('/rest/v1/pedidos?select=codigo,criado,nome,total,status&order=criado.desc&limit=20');
+ if(!r.ok)return aviso('Não foi possível consultar ('+await erroHttp(r)+').',1);
+ const l=await r.json();
+ $('#pedRes').innerHTML='<div class="ped">'+(l.length?'<ul class="itped">'+l.map(p=>`<li><button type="button" class="lk" onclick="$('#pedCod').value='${esc(p.codigo)}';conferirPedido()">${esc(p.codigo)}</button> · ${R(p.total)} · ${esc(p.nome||'sem nome')} · ${esc(p.status)} · ${new Date(p.criado).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}</li>`).join('')+'</ul>':'<p>Nenhum pedido ainda.</p>')+'</div>';
 }
 function exportar(){const b=new Blob([JSON.stringify(itens(),null,1)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='produtos-copia.json';a.click()}
 let dp;const bi=$('#btnInstalar');
