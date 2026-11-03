@@ -167,7 +167,7 @@ footer .script{font-size:26px;color:var(--esc);text-align:right;line-height:1.1}
 .cad:hover{opacity:1}
 .ac{display:flex;gap:6px}.ac .btn:first-child{flex:1;min-width:0;white-space:normal;font-size:13px;padding:10px 8px;line-height:1.2;text-align:center}.ac .btn:first-child .ico{width:18px;height:18px}.ac .sh{padding:0;width:40px;min-height:40px;flex:none}
 .flash{animation:fl 2.4s}@keyframes fl{0%,70%{box-shadow:0 0 0 4px #f3b9c0}100%{box-shadow:0 2px 10px #2d6a350d}}
-#toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:var(--esc);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;z-index:300;opacity:0;pointer-events:none;transition:opacity .25s;max-width:90vw;text-align:center}
+#toast{z-index:700;position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:var(--esc);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;z-index:300;opacity:0;pointer-events:none;transition:opacity .25s;max-width:90vw;text-align:center}
 #toast.on{opacity:1}#toast.err{background:#b3261e}
 .admbox{border:1.5px dashed var(--verde2);border-radius:14px;background:#fff;padding:18px 20px;margin:10px 0 30px}
 .bd{display:inline-block;background:var(--folha);color:var(--esc);border-radius:6px;padding:1px 8px;font-size:12px;font-weight:700;margin:2px 4px 2px 0}
@@ -249,8 +249,8 @@ label{font-size:16px}input,select,textarea{font-size:16px}
 .det{width:min(100%,640px)}
 .dfoto{background:#f1f5ea;border-radius:12px;display:grid;place-items:center;overflow:hidden;min-height:160px;font-size:80px}.dfoto img{width:100%;max-height:60vh;object-fit:contain}
 .ddesc{white-space:pre-line;font-size:17px;margin:10px 0;color:var(--texto)}
-#seletor{z-index:150}
-#admin select{pointer-events:none}.selw{position:relative}.selov{position:absolute;inset:0;width:100%;background:transparent;border:0;cursor:pointer}
+#seletor{z-index:600}
+#adm select{pointer-events:none}.selw{position:relative}.selov{position:absolute;inset:0;width:100%;background:transparent;border:0;cursor:pointer}
 .foto2{position:relative}.foto2 img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 
 .det{border:2px solid var(--verde)}
@@ -283,6 +283,52 @@ label{font-size:16px}input,select,textarea{font-size:16px}
 .ped .tt{font-size:22px;font-weight:800;color:#fff;margin-bottom:6px}
 .ped p{margin:6px 0}.ped .ok{color:#9be3a8;font-weight:700}.ped .bad{color:#ff9c94;font-weight:700}
 .itped{margin:6px 0 6px 18px}.itped li{margin:4px 0}
+
+#toast{z-index:700}
+#adm{position:fixed;inset:0;z-index:500;background:#f4f7f1;overflow:auto;display:none;font-size:16px}
+#adm.on{display:block}
+.ad-login{min-height:100%;display:grid;place-items:center;padding:20px}
+.ad-card{width:min(100%,420px);background:#fff;border:1px solid var(--linha);border-radius:18px;padding:26px;box-shadow:0 10px 30px #0001;text-align:center}
+.ad-card label{text-align:left}.ad-card h2{margin:10px 0 4px}
+.ad-logo{width:84px;height:84px;border-radius:50%;object-fit:cover}
+.ad-top{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--linha);display:flex;align-items:center;gap:12px;padding:10px 16px;height:60px}
+.ad-top img{width:38px;height:38px;border-radius:50%;object-fit:cover}
+.ad-top b{color:var(--esc);font-size:17px}.ad-user{margin-left:auto;font-size:13px;color:var(--suave);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ad-burger{display:none;border:1.5px solid var(--linha);background:#fff;border-radius:10px;width:40px;height:40px;font-size:20px;color:var(--esc)}
+.ad-body{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 60px)}
+.ad-side{background:#fff;border-right:1px solid var(--linha);padding:14px 10px;display:flex;flex-direction:column;gap:4px}
+.ad-side hr{border:0;border-top:1px solid var(--linha);margin:8px 0}
+.ad-nav{background:none;border:0;text-align:left;padding:12px 14px;border-radius:10px;font-size:16px;font-weight:600;color:var(--texto)}
+.ad-nav:hover{background:var(--folha)}.ad-nav.on{background:var(--folha);color:var(--esc);font-weight:700}
+.ad-main{padding:20px;max-width:1100px;width:100%}
+.ad-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.ad-head h2{font-size:26px}
+.ad-head.ed{position:sticky;top:60px;z-index:4;background:#f4f7f1;padding:10px 0;margin-top:-10px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chip{border:1.5px solid var(--linha);background:#fff;border-radius:999px;padding:8px 14px;font-size:14px;font-weight:700;color:var(--suave)}
+.chip.on{background:var(--verde);border-color:var(--verde);color:#fff}
+.ad-lista{padding:0;margin-top:8px}
+.ad-lista li{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid var(--linha);border-radius:12px;padding:10px;margin-bottom:10px;list-style:none}
+.ad-lista .th{width:58px;height:58px;border-radius:10px;background:var(--folha);display:grid;place-items:center;font-size:26px;overflow:hidden;flex:none}.ad-lista .th img{width:100%;height:100%;object-fit:cover}
+.ad-info{flex:1;min-width:0}.ad-info b{display:block}.ad-info small{display:block;color:var(--suave);font-size:13px}
+.ad-acts{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.lk.red{color:#b3261e}.vazio2{justify-content:center;color:var(--suave)}
+.ed-grid{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+.ed-tit{font-weight:700;color:var(--esc);margin-bottom:8px}
+.pn{background:#fff;border:1px solid var(--linha);border-radius:12px;margin-bottom:10px}
+.pn summary{padding:12px 14px;font-weight:700;cursor:pointer;color:var(--esc)}.pn>div{padding:0 14px 14px}
+.ad-foto{background:#fff;border:1.5px dashed var(--linha);border-radius:12px;min-height:150px;display:grid;place-items:center;overflow:hidden;color:var(--suave);margin-bottom:8px}
+.ad-foto img{width:100%;max-height:340px;object-fit:contain}
+.ad-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.st-card{background:#fff;border:1px solid var(--linha);border-radius:12px;padding:14px}.st-card small{display:block;color:var(--suave)}.st-card b{display:block;font-size:30px;color:var(--esc)}.st-card span{font-size:13px;color:var(--suave)}
+.cfg{max-width:560px}
+#adm .ped{background:#fff;border-color:var(--linha);color:var(--texto)}#adm .ped .tt{color:var(--esc)}#adm .ped .ok{color:#1d7a35}#adm .ped .bad{color:#b3261e}
+#adm .bad{color:#b3261e;font-weight:700}
+@media(max-width:860px){
+ .ad-burger{display:block}.ad-body{grid-template-columns:1fr}
+ .ad-side{position:fixed;top:60px;left:0;bottom:0;width:250px;transform:translateX(-105%);transition:transform .2s;z-index:6;box-shadow:6px 0 20px #0002}.ad-side.on{transform:none}
+ .ed-grid{grid-template-columns:1fr}.ad-main{padding:14px}.ad-lista li{flex-wrap:wrap}.ad-acts{flex-direction:row;align-items:center}
+}
 </style>
 </head>
 <body>
@@ -364,51 +410,7 @@ label{font-size:16px}input,select,textarea{font-size:16px}
 
 <section class="dep" id="depoimentos" hidden><div class="wrap"><h2>Depoimentos</h2><div class="deps" id="deps"></div></div></section>
 
-<section id="admin" hidden style="padding:10px 0 0"><div class="wrap"><div class="admbox">
- <h3>🔒 Área do administrador</h3>
- <div id="login" class="linha">
-  <input type="email" id="email" placeholder="E-mail do administrador" style="max-width:300px" autocomplete="username" onkeydown="if(event.key==='Enter')entrar()">
-  <input type="password" id="senha" placeholder="Senha" style="max-width:220px" autocomplete="current-password" onkeydown="if(event.key==='Enter')entrar()">
-  <button class="btn" onclick="entrar()">Entrar</button>
- </div>
- <form id="painel" hidden onsubmit="salvar(event)">
-  <p class="dica">Cadastre e gerencie as lembrancinhas: foto, nome, descrição, onde aparece, tema, valor, status e ordem.</p>
-  <label for="pImg">Foto (da galeria do celular)</label>
-  <input id="pImg" type="file" accept="image/*" onchange="aoEscolherFoto()">
-  <div id="sug"></div>
-  <label for="pNome">Nome (ou nome do cliente, nos depoimentos)</label><input id="pNome" required>
-  <label for="pDesc">Descrição (ou o texto do depoimento)</label><textarea id="pDesc" rows="3" placeholder="Escreva a descrição"></textarea>
-  <div class="linha" style="margin-top:8px"><button class="btn out sm" type="button" onclick="sugerirIA(true)">✨ Sugerir descrição com IA</button></div>
-  <label for="pLocal">Onde vai aparecer</label>
-  <select id="pLocal" onchange="aoLocal()">
-   <option value="1">(1) - Nossos Produtos</option><option value="2">(2) - Sobre a marca</option><option value="3">(3) - Depoimentos dos clientes</option><option value="4">(4) - Em Velas</option><option value="5">(5) - Só em Temas</option>
-  </select>
-  <div id="gProd">
-   <div class="row2"><div><label for="pTema">Tema</label><select id="pTema" onchange="sugerir()"></select></div><div><label for="pOc">Ocasião (opcional)</label><select id="pOc" onchange="sugerir()"></select></div></div>
-   <div class="row2"><div><label for="pPreco">Valor em moeda (R$)</label><input id="pPreco" inputmode="numeric" placeholder="R$ 0,00" oninput="mascara(this)" autocomplete="off"></div><div><label for="pPeso">Peso (g ou kg)</label><input id="pPeso" placeholder="Ex.: 250 g ou 0,5 kg" onblur="const g=parsePeso(this.value);if(g)this.value=fmtPeso(g)" autocomplete="off"></div></div>
-   <fieldset class="pag" style="margin-top:12px"><legend>Tags de envio (marque as que se aplicam)</legend>
-    <label class="rd"><input type="checkbox" name="tag" value="#palito"> #palito (ex.: tulipas no palito)</label>
-    <label class="rd"><input type="checkbox" name="tag" value="#cartão"> #cartão (ex.: lembrancinhas em cartões planos)</label>
-    <label class="rd"><input type="checkbox" name="tag" value="#frasco"> #frasco (ex.: frascos de aromatizadores ou sabonetes líquidos)</label>
-   </fieldset>
-  </div>
-  <div class="row2"><div><label for="pStatus">Status</label><select id="pStatus" onchange="aoStatus()"><option value="publicado">Publicado</option><option value="agendado">Agendado</option><option value="rascunho">Rascunho</option></select></div>
-  <div id="gData" hidden><label for="pData">Data de publicação</label><input id="pData" type="datetime-local"></div></div>
-  <label for="pOrdem">Ordem de exibição (1 = primeiro)</label><input id="pOrdem" type="number" min="1" step="1">
-  <div class="linha"><button class="btn" type="submit" id="bSalvar">Salvar produto</button><button class="btn out" type="button" id="bCancel" hidden onclick="cancelar()">Cancelar edição</button></div>
-  <div class="linha"><button class="btn out" type="button" onclick="exportar()">Baixar cópia</button>
-  <button class="btn out" type="button" onclick="sair()">Sair</button></div>
-  <p class="dica">Tudo o que você salva aparece na hora para os clientes. <button type="button" class="lk" onclick="trocarChaveIA()">Trocar chave da IA</button></p>
-  <h3 style="margin-top:18px;font-size:16px">Conferir pedido</h3>
-  <div class="row2"><div><label for="pedCod">Código do pedido</label><input id="pedCod" placeholder="Ex: CS-7K3F9Q" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();conferirPedido()}"></div>
-  <div><label for="pedTotal">Total que veio na mensagem (opcional)</label><input id="pedTotal" inputmode="numeric" placeholder="R$ 0,00" oninput="mascara(this)" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();conferirPedido()}"></div></div>
-  <div class="linha"><button class="btn" type="button" onclick="conferirPedido()">Conferir</button><button class="btn out" type="button" onclick="listarPedidos()">Últimos pedidos</button></div>
-  <div id="pedRes"></div>
-  <h3 style="margin-top:22px;font-size:16px">Itens cadastrados</h3>
-  <div class="row2"><div><label for="busca">Buscar por nome</label><input id="busca" placeholder="Digite o nome do produto" oninput="lista()" autocomplete="off"></div><div><label for="fTemaAdm">Filtrar por tema</label><select id="fTemaAdm" onchange="lista()"></select></div></div>
-  <p class="dica" id="cont"></p><ul id="lista"></ul>
- </form>
-</div></div></section>
+
 </main>
 
 <footer id="contato"><div class="wrap">
@@ -531,17 +533,32 @@ async function enviarFoto(d){
 }
 async function apagarFoto(u){const m=String(u||'').split('/storage/v1/object/public/'+SB.bucket+'/')[1];if(m)try{await sbFetch('/storage/v1/object/'+SB.bucket+'/'+m,{method:'DELETE'})}catch{}}
 
-async function iniciar(){
- imgs();
- await carregar();
+const dig=v=>String(v||'').replace(/\D/g,'');
+function aplicarLinks(){
  $('#topZap').href=zapUrl('Olá! Vim pelo site da CampSaboaria.');
  $('#lkZap').href=zapUrl();$('#lkZap').textContent=CFG.tel;$('#hor').textContent=CFG.horario;
  $('#lkInsta').href='https://www.instagram.com/'+CFG.insta;$('#lkInsta').textContent='@'+CFG.insta;
+}
+async function carregarConfig(){
+ if(!sbOk())return;
+ try{
+  const r=await sbFetch('/rest/v1/configuracoes?select=chave,valor');
+  if(!r.ok)return;
+  const m=Object.fromEntries((await r.json()).map(x=>[x.chave,x.valor]));
+  if(dig(m.whatsapp))CFG.whats=dig(m.whatsapp);
+  if(m.telefone)CFG.tel=m.telefone;
+  if('horario' in m)CFG.horario=m.horario;
+  if(m.instagram)CFG.insta=m.instagram;
+  if(dig(m.cep_origem).length===8)CFG.frete.cepOrigem=dig(m.cep_origem);
+  const pg=String(m.pagamentos||'').split(',').map(x=>x.trim()).filter(Boolean);
+  if(pg.length)CFG.pagamentos=pg;
+ }catch{}
+}
+async function iniciar(){
+ imgs();
+ await Promise.all([carregar(),carregarConfig()]);
+ aplicarLinks();
  $('#ano').textContent=new Date().getFullYear();
- $('#pTema').innerHTML=TEMAS.map(t=>`<option>${t}</option>`).join('');
- $('#fTemaAdm').innerHTML='<option value="">Todos os temas</option>'+TEMAS.map(t=>`<option>${t}</option>`).join('');
- $('#pOc').innerHTML='<option value="">—</option>'+OCAS.map(t=>`<option>${t}</option>`).join('');
- aoLocal();aoStatus();$('#pOrdem').value=proxOrdem();
  desenhar();pintarCarrinho();abrirItem();
 }
 const resumo=t=>{t=String(t||'');return t.length>110?t.slice(0,110).trim()+'…':t};
@@ -571,7 +588,7 @@ function desenhar(){
  $('#sobFotos').innerHTML=!sob.length?'<figure class="logofig"><img data-logo alt="CampSaboaria" src="'+PX+'"></figure>':sob.map(p=>`<figure>${p.img?`<img src="${esc(p.img)}" alt="${esc(p.nome)}" loading="lazy">`:''}<figcaption><b>${esc(p.nome)}</b>${esc(p.desc)}</figcaption></figure>`).join('');
  $('#depoimentos').hidden=!dep.length;$('#navDep').hidden=!dep.length;
  $('#deps').innerHTML=dep.map(p=>`<div class="dp"><div class="av">${p.img?`<img src="${esc(p.img)}" alt="">`:esc((p.nome||'?')[0])}</div><div><p>“${esc(p.desc)}”</p><small>— ${esc(p.nome)}</small><span class="est">★★★★★</span></div></div>`).join('');
- lista();imgs();
+ adAtualiza();imgs();
 }
 async function compartilhar(id){
  const p=itens().find(x=>x.id===id);if(!p)return;
@@ -664,7 +681,7 @@ async function cotar(){
  if(sbOk()&&SB.funcFrete){
   $('#freteRes').textContent='Calculando o frete…';
   try{
-   const r=await fetch(SB.url+'/functions/v1/'+SB.funcFrete,{method:'POST',headers:{apikey:SB.chave,'Content-Type':'application/json'},body:JSON.stringify({acao:'cotar',cep:fr.cep,origem:(CFG.frete||{}).cepOrigem,itens:t.s.map(c=>({id:c.id,qtd:c.q,ess:c.ess||'',cor:c.cor||''}))})});
+   const r=await fetch(SB.url+'/functions/v1/'+SB.funcFrete,{method:'POST',headers:{apikey:SB.chave,'Content-Type':'application/json'},body:JSON.stringify({acao:'cotar',cep:fr.cep,itens:t.s.map(c=>({id:c.id,qtd:c.q,ess:c.ess||'',cor:c.cor||''}))})});
    let j={};try{j=await r.json()}catch{}
    if(!r.ok||j.erro)throw new Error(j.erro||(r.status===404?'serviço de frete ainda não instalado':r.status===401||r.status===403?'acesso negado ao serviço de frete':'erro '+r.status));
    if(!j.opcoes||!j.opcoes.length)throw new Error('sem opções de envio');
@@ -740,7 +757,156 @@ async function enviar(){
  if(!w)location.href=url;
  if(ok)aviso('Pedido '+d.codigo+' registrado ✓');
 }
-function abrirAdmin(){const a=$('#admin');a.hidden=false;a.scrollIntoView({behavior:'smooth'});if(!$('#login').hidden)setTimeout(()=>$('#email').focus({preventScroll:true}),500)}
+const ADM_HTML=`
+<div class="ad-login" id="adLogin">
+ <div class="ad-card">
+  <img data-logo alt="" class="ad-logo">
+  <h2>Área do administrador</h2>
+  <p class="dica">Acesso restrito. Entre com o e-mail e a senha do administrador.</p>
+  <label for="email">E-mail</label><input id="email" type="email" autocomplete="username" onkeydown="if(event.key==='Enter')entrar()">
+  <label for="senha">Senha</label><input id="senha" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')entrar()">
+  <button class="btn" type="button" onclick="entrar()" style="width:100%;margin-top:16px">Entrar</button>
+  <button class="btn out" type="button" onclick="fecharAdmin()" style="width:100%;margin-top:10px">← Voltar à loja</button>
+ </div>
+</div>
+<div class="ad-app" id="adApp" hidden>
+ <header class="ad-top"><button type="button" class="ad-burger" onclick="adMenu()" aria-label="Menu">☰</button><img data-logo alt=""><b>Painel · CampSaboaria</b><span class="ad-user" id="adUser"></span></header>
+ <div class="ad-body">
+  <nav class="ad-side" id="adSide">
+   <button type="button" class="ad-nav" data-v="produtos" onclick="admView('produtos')">Produtos</button>
+   <button type="button" class="ad-nav" data-v="pedidos" onclick="admView('pedidos')">Pedidos</button>
+   <button type="button" class="ad-nav" data-v="estatisticas" onclick="admView('estatisticas')">Estatísticas</button>
+   <button type="button" class="ad-nav" data-v="configuracoes" onclick="admView('configuracoes')">Configurações</button>
+   <hr>
+   <button type="button" class="ad-nav" onclick="fecharAdmin()">Ver loja</button>
+   <button type="button" class="ad-nav" onclick="sair()">Sair</button>
+  </nav>
+  <main class="ad-main">
+   <section class="adv" id="v-produtos">
+    <div class="ad-head"><h2>Produtos</h2><button type="button" class="btn" onclick="adNovo()">+ NOVO PRODUTO</button></div>
+    <div class="chips" id="adChips"></div>
+    <div class="row2"><div><label for="busca">Buscar por nome</label><input id="busca" placeholder="Digite o nome do produto" oninput="adListar()" autocomplete="off"></div>
+    <div><label for="fTemaAdm">Filtrar por tema</label><select id="fTemaAdm" onchange="adListar()"></select></div></div>
+    <p class="dica" id="cont"></p><ul id="lista" class="ad-lista"></ul>
+    <div class="linha"><button type="button" class="btn out sm" onclick="exportar()">Baixar cópia dos produtos</button></div>
+   </section>
+   <form class="adv" id="painel" hidden onsubmit="salvar(event)">
+    <div class="ad-head ed"><button type="button" class="btn out sm" onclick="cancelar()">← Produtos</button><b id="edTitulo">Novo produto</b><button class="btn" type="submit" id="bSalvar">Salvar produto</button></div>
+    <div class="ed-grid">
+     <div class="ed-main">
+      <label for="pNome">Nome do produto</label><input id="pNome" required autocomplete="off">
+      <label for="pImg">Foto</label>
+      <div class="ad-foto"><img id="pPrev" alt="" hidden><span id="pPrevVazio">Nenhuma foto escolhida</span></div>
+      <input id="pImg" type="file" accept="image/*" onchange="aoEscolherFoto()">
+      <label for="pDesc">Descrição</label><textarea id="pDesc" rows="9" placeholder="Escreva a descrição do produto"></textarea>
+      <div class="linha"><button class="btn out sm" type="button" onclick="sugerirIA(true)">✨ Sugerir descrição com IA</button></div>
+      <div id="sug"></div>
+     </div>
+     <aside class="ed-side">
+      <p class="ed-tit">Configurações do produto</p>
+      <details class="pn" open><summary>Categorias</summary><div>
+       <label for="pLocal">Onde vai aparecer</label>
+       <select id="pLocal" onchange="aoLocal()"><option value="1">(1) - Nossos Produtos</option><option value="2">(2) - Sobre a marca</option><option value="3">(3) - Depoimentos dos clientes</option><option value="4">(4) - Em Velas</option><option value="5">(5) - Só em Temas</option></select>
+       <div class="so-prod"><label for="pTema">Tema</label><select id="pTema" onchange="sugerir()"></select>
+       <label for="pOc">Ocasião (opcional)</label><select id="pOc" onchange="sugerir()"></select></div>
+      </div></details>
+      <details class="pn" open><summary>Status e publicação</summary><div>
+       <label for="pStatus">Status</label><select id="pStatus" onchange="aoStatus()"><option value="publicado">Publicado</option><option value="agendado">Agendado</option><option value="rascunho">Rascunho</option></select>
+       <div id="gData" hidden><label for="pData">Data de publicação</label><input id="pData" type="datetime-local"></div>
+       <label for="pLink">Link do produto</label><input id="pLink" readonly placeholder="Aparece depois de salvar">
+       <div class="linha"><button type="button" class="btn out sm" onclick="copiarLink()">Copiar link</button></div>
+      </div></details>
+      <details class="pn so-prod" open><summary>Preço</summary><div>
+       <label for="pPreco">Valor em moeda (R$)</label><input id="pPreco" inputmode="numeric" placeholder="R$ 0,00" oninput="mascara(this)" autocomplete="off">
+      </div></details>
+      <details class="pn so-prod" open><summary>Peso e frete</summary><div>
+       <label for="pPeso">Peso (g ou kg)</label><input id="pPeso" placeholder="Ex.: 250 g ou 0,5 kg" onblur="const g=parsePeso(this.value);if(g)this.value=fmtPeso(g)" autocomplete="off">
+       <fieldset class="pag"><legend>Tags de envio</legend>
+        <label class="rd"><input type="checkbox" name="tag" value="#palito"> #palito (ex.: tulipas no palito)</label>
+        <label class="rd"><input type="checkbox" name="tag" value="#cartão"> #cartão (ex.: lembrancinhas em cartões planos)</label>
+        <label class="rd"><input type="checkbox" name="tag" value="#frasco"> #frasco (ex.: frascos de aromatizadores ou sabonetes líquidos)</label>
+       </fieldset>
+       <p class="dica">O frete é calculado automaticamente pelo CEP do cliente, a partir do peso e das tags.</p>
+      </div></details>
+      <details class="pn"><summary>Exibição</summary><div>
+       <label for="pOrdem">Ordem de referência</label><input id="pOrdem" type="number" min="1" step="1">
+      </div></details>
+     </aside>
+    </div>
+   </form>
+   <section class="adv" id="v-pedidos" hidden>
+    <div class="ad-head"><h2>Pedidos</h2></div>
+    <div class="row2"><div><label for="pedCod">Código do pedido</label><input id="pedCod" placeholder="Ex: CS-7K3F9Q" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();conferirPedido()}"></div>
+    <div><label for="pedTotal">Total que veio na mensagem (opcional)</label><input id="pedTotal" inputmode="numeric" placeholder="R$ 0,00" oninput="mascara(this)" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();conferirPedido()}"></div></div>
+    <div class="linha"><button class="btn" type="button" onclick="conferirPedido()">Conferir</button><button class="btn out" type="button" onclick="listarPedidos()">Últimos pedidos</button></div>
+    <div id="pedRes"></div>
+   </section>
+   <section class="adv" id="v-estatisticas" hidden>
+    <div class="ad-head"><h2>Estatísticas</h2></div>
+    <div id="stCards" class="ad-cards"></div>
+   </section>
+   <section class="adv" id="v-configuracoes" hidden>
+    <div class="ad-head"><h2>Configurações</h2></div>
+    <div class="ed-main cfg">
+     <label for="cfWhats">WhatsApp da loja (só números, com 55 e DDD)</label><input id="cfWhats" inputmode="numeric" placeholder="5519999999999" autocomplete="off">
+     <label for="cfTel">Telefone exibido no rodapé</label><input id="cfTel" placeholder="(19) 99999-9999" autocomplete="off">
+     <label for="cfHor">Horário de atendimento</label><input id="cfHor" placeholder="Segunda a sábado, das 8h às 18h" autocomplete="off">
+     <label for="cfInsta">Instagram (usuário, sem @)</label><input id="cfInsta" placeholder="campsaboaria" autocomplete="off">
+     <label for="cfCep">CEP de origem do frete</label><input id="cfCep" inputmode="numeric" maxlength="9" placeholder="00000-000" oninput="mascaraCep(this)" autocomplete="off">
+     <label for="cfPag">Formas de pagamento (separadas por vírgula)</label><input id="cfPag" placeholder="Pix, Cartão" autocomplete="off">
+     <div class="linha"><button class="btn" type="button" onclick="salvarConfig()">Salvar configurações</button></div>
+     <p class="dica">O CEP de origem é usado pelo servidor no cálculo do frete. As formas de pagamento aparecem no carrinho.</p>
+     <h3 style="margin-top:22px">Inteligência artificial</h3>
+     <p class="dica">A chave da IA fica guardada só neste aparelho.</p>
+     <div class="linha"><button class="btn out" type="button" onclick="trocarChaveIA()">Trocar chave da IA</button></div>
+    </div>
+   </section>
+  </main>
+ </div>
+</div>`;
+let admAtual='produtos',adFiltro='todos';
+const STAT={todos:'Todos',publicado:'Publicados',agendado:'Agendados',rascunho:'Rascunhos',lixeira:'Lixeira'};
+function ajustarViewport(m){const v=document.querySelector('meta[name=viewport]');if(v)v.content=m==='admin'?'width=device-width, initial-scale=1':'width=960'}
+function prepararSelects(){
+ document.querySelectorAll('#adm select').forEach(sl=>{if(sl.parentNode.classList.contains('selw'))return;const w=document.createElement('div');w.className='selw';sl.parentNode.insertBefore(w,sl);w.appendChild(sl);const o=document.createElement('button');o.type='button';o.className='selov';o.onclick=()=>abrirSeletor(sl);const lb=document.querySelector('label[for="'+sl.id+'"]');o.setAttribute('aria-label','Escolher: '+(lb?lb.textContent:sl.id));w.appendChild(o);sl.tabIndex=-1});
+}
+function garantirAdm(){
+ if($('#adm'))return;
+ const d=document.createElement('div');d.id='adm';d.innerHTML=ADM_HTML;document.body.appendChild(d);
+ $('#pTema').innerHTML=TEMAS.map(t=>`<option>${t}</option>`).join('');
+ $('#fTemaAdm').innerHTML='<option value="">Todos os temas</option>'+TEMAS.map(t=>`<option>${t}</option>`).join('');
+ $('#pOc').innerHTML='<option value="">—</option>'+OCAS.map(t=>`<option>${t}</option>`).join('');
+ prepararSelects();imgs();aoLocal();aoStatus();$('#pOrdem').value=proxOrdem();
+}
+function abrirAdmin(){
+ garantirAdm();$('#adm').classList.add('on');document.body.style.overflow='hidden';ajustarViewport('admin');
+ if(location.hash!=='#admin')history.replaceState(null,'','#admin');
+ admEstado();
+}
+function fecharAdmin(){
+ const a=$('#adm');if(a)a.classList.remove('on');
+ document.body.style.overflow='';ajustarViewport('loja');
+ if(location.hash==='#admin')history.replaceState(null,'',location.pathname+location.search);
+}
+function admEstado(){
+ const a=logado();$('#adLogin').hidden=a;$('#adApp').hidden=!a;
+ if(a){$('#adUser').textContent=(sess.user&&sess.user.email)||'';admView(admAtual==='editor'?'produtos':admAtual)}
+ else setTimeout(()=>{const e=$('#email');if(e)e.focus({preventScroll:true})},150);
+}
+function adMenu(){$('#adSide').classList.toggle('on')}
+function admView(v){
+ admAtual=v;
+ ['produtos','pedidos','estatisticas','configuracoes'].forEach(n=>{$('#v-'+n).hidden=n!==v});
+ $('#painel').hidden=v!=='editor';
+ document.querySelectorAll('.ad-nav[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===(v==='editor'?'produtos':v)));
+ $('#adSide').classList.remove('on');
+ if(v==='produtos')adListar();
+ if(v==='estatisticas')admStats();
+ if(v==='configuracoes')admConfig();
+ if(v==='pedidos')listarPedidos();
+ $('#adm').scrollTop=0;
+}
+function adAtualiza(){if($('#adm')&&$('#adm').classList.contains('on')&&logado()&&admAtual==='produtos')adListar()}
 async function entrar(){
  if(!sbOk())return aviso('O Supabase ainda não foi configurado no site.',1);
  const email=$('#email').value.trim(),senha=$('#senha').value;
@@ -748,16 +914,18 @@ async function entrar(){
  try{
   const r=await fetch(SB.url+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:SB.chave,'Content-Type':'application/json'},body:JSON.stringify({email,password:senha})});
   if(!r.ok)throw new Error(String(r.status));
-  sess=await r.json();gravar('cs_sess',sess);await carregar();modo();desenhar();pintarCarrinho();aviso('Bem-vindo(a), administrador(a)! ✓');
+  sess=await r.json();gravar('cs_sess',sess);$('#senha').value='';
+  await carregar();admEstado();desenhar();pintarCarrinho();aviso('Bem-vindo(a), administrador(a)! ✓');
  }catch(e){aviso(/^(400|401|422)$/.test(e.message)?'E-mail ou senha incorretos.':'Não foi possível entrar ('+e.message+').',1)}
 }
 async function sair(){
  try{if(sess)await fetch(SB.url+'/auth/v1/logout',{method:'POST',headers:{apikey:SB.chave,Authorization:'Bearer '+sess.access_token}})}catch{}
- sess=null;localStorage.removeItem('cs_sess');await carregar();modo();$('#admin').hidden=true;desenhar();pintarCarrinho();scrollTo({top:0,behavior:'smooth'});
+ sess=null;localStorage.removeItem('cs_sess');
+ fecharAdmin();const a=$('#adm');if(a)a.remove();
+ await carregar();desenhar();pintarCarrinho();scrollTo({top:0});
 }
-function modo(){const a=logado();document.querySelector('.admbox').classList.toggle('logado',a);if(a)$('#admin').hidden=false;$('#login').hidden=a;$('#painel').hidden=!a;$('#senha').value='';lista()}
 const proxOrdem=()=>Math.max(0,...itens().map(p=>p.ordem||0))+1;
-function aoLocal(){const v=+$('#pLocal').value,prod=[1,4,5].includes(v);$('#gProd').hidden=!prod;if(v===4&&$('#pTema').value!=='Velas'&&!editId){$('#pTema').value='Velas';sugerir()}}
+function aoLocal(){const v=+$('#pLocal').value,prod=[1,4,5].includes(v);document.querySelectorAll('.so-prod').forEach(e=>e.hidden=!prod);if(v===4&&$('#pTema').value!=='Velas'&&!editId){$('#pTema').value='Velas';sugerir()}}
 function aoStatus(){$('#gData').hidden=$('#pStatus').value!=='agendado'}
 async function reduzir(file){
  const pintarImg=(w,h,fonte)=>{const k=Math.min(1,720/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*k));c.height=Math.max(1,Math.round(h*k));c.getContext('2d').drawImage(fonte,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.78)};
@@ -772,7 +940,7 @@ async function reduzir(file){
 }
 const dataUrlBlob=d=>{const bin=atob(d.split(',')[1]),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new Blob([u],{type:'image/jpeg'})};
 async function erroHttp(r){const t=await r.text();let m=t;try{const j=JSON.parse(t);m=j.message||j.error||j.msg||t}catch{}return r.status+' '+String(m).slice(0,120)}
-function aoEscolherFoto(){}
+function aoEscolherFoto(){const f=$('#pImg').files[0];if(f){$('#pPrev').src=URL.createObjectURL(f);$('#pPrev').hidden=false;$('#pPrevVazio').hidden=true}}
 async function salvar(e){
  e.preventDefault();
  const f=$('#pImg').files[0],loc=+$('#pLocal').value,prod=[1,4,5].includes(loc),preco=moedaVal($('#pPreco').value),peso=parsePeso($('#pPeso').value),status=$('#pStatus').value,data=$('#pData').value;
@@ -795,29 +963,79 @@ async function salvar(e){
  }catch(err){const m=err&&err.message?err.message:String(err);aviso(/^Não consegui/.test(m)?m:'Não foi possível salvar ('+m+').',1)}
  finally{btn.disabled=false}
 }
-function cancelar(){editId=null;$('#painel').reset();$('#sug').textContent='';$('#bSalvar').textContent='Salvar produto';sugAnt='';$('#bCancel').hidden=true;aoLocal();aoStatus();$('#pOrdem').value=proxOrdem()}
+function resetForm(){
+ editId=null;$('#painel').reset();$('#sug').textContent='';sugAnt='';
+ $('#pPrev').hidden=true;$('#pPrev').removeAttribute('src');$('#pPrevVazio').hidden=false;
+ $('#bSalvar').textContent='Salvar produto';$('#edTitulo').textContent='Novo produto';$('#pLink').value='';
+ aoLocal();aoStatus();$('#pOrdem').value=proxOrdem();
+}
+function adNovo(){resetForm();admView('editor')}
+function cancelar(){resetForm();admView('produtos')}
 function editar(id){
- const p=itens().find(x=>x.id===id);if(!p)return;editId=id;
+ const p=itens().find(x=>x.id===id);if(!p)return;
+ resetForm();editId=id;
  $('#pNome').value=p.nome;$('#pDesc').value=p.desc||'';$('#pLocal').value=p.loc;aoLocal();
  if(p.tema)$('#pTema').value=p.tema;$('#pOc').value=p.ocasiao||'';$('#pPreco').value=p.preco?R(p.preco):'';$('#pPeso').value=p.peso?fmtPeso(p.peso):'';
  document.querySelectorAll('input[name=tag]').forEach(c=>c.checked=(p.tags||[]).includes(c.value));
- $('#pStatus').value=p.status;aoStatus();$('#pData').value=p.data?new Date(p.data).toISOString().slice(0,16):'';$('#pOrdem').value=p.ordem;
- $('#bSalvar').textContent='Salvar alterações';$('#bCancel').hidden=false;$('#sug').textContent='Para trocar a foto, escolha uma nova. Senão, a atual é mantida.';
- $('#painel').scrollIntoView({behavior:'smooth'});
+ $('#pStatus').value=p.status==='lixeira'?'rascunho':p.status;aoStatus();$('#pData').value=p.data?new Date(p.data).toISOString().slice(0,16):'';$('#pOrdem').value=p.ordem;
+ if(p.img){$('#pPrev').src=p.img;$('#pPrev').hidden=false;$('#pPrevVazio').hidden=true}
+ $('#pLink').value=location.origin+location.pathname+'#item-'+id;
+ $('#bSalvar').textContent='Salvar alterações';$('#edTitulo').textContent='Editar produto';$('#sug').textContent='Para trocar a foto, escolha uma nova. Senão, a atual é mantida.';
+ admView('editor');
 }
-async function excluir(id){
- if(!confirm('Excluir este item?'))return;
+async function copiarLink(){const v=$('#pLink').value;if(!v)return aviso('Salve o produto para gerar o link.',1);try{await navigator.clipboard.writeText(v);aviso('Link copiado ✓')}catch{prompt('Copie o link:',v)}}
+const stTxt=p=>p.status==='agendado'?'Agendado · '+fmt(p.data):p.status==='rascunho'?'Rascunho':p.status==='lixeira'?'Lixeira':'Publicado';
+function adFiltrar(k){adFiltro=k;adListar()}
+function adListar(){
+ const todos=itens(),cnt=k=>k==='todos'?todos.filter(p=>p.status!=='lixeira').length:todos.filter(p=>p.status===k).length;
+ $('#adChips').innerHTML=Object.keys(STAT).map(k=>`<button type="button" class="chip${k===adFiltro?' on':''}" onclick="adFiltrar('${k}')">${STAT[k]} (${cnt(k)})</button>`).join('');
+ const q=norm2($('#busca').value),ft=$('#fTemaAdm').value;
+ const l=todos.filter(p=>adFiltro==='todos'?p.status!=='lixeira':p.status===adFiltro).filter(p=>(!q||norm2(p.nome).includes(q))&&(!ft||p.tema===ft)).sort((a,b)=>criado(b)-criado(a));
+ $('#cont').textContent=l.length+(l.length===1?' item':' itens');
+ $('#lista').innerHTML=l.length?l.map(p=>`<li><div class="th">${p.img?`<img src="${esc(p.img)}" alt="">`:esc(ICO[p.tema]||'🎁')}</div><div class="ad-info"><b>${esc(p.nome)}</b><small><span class="bd">[Loc: ${p.loc} - ${LOCS[p.loc]}]</span><span class="bd st-${p.status}">${stTxt(p)}</span></small><small>${[p.tema,p.ocasiao,p.preco>0?R(p.preco):'',p.peso>0?fmtPeso(p.peso):'',(p.tags||[]).join(' ')].filter(Boolean).map(esc).join(' · ')}</small></div><div class="ad-acts">${p.status==='lixeira'?`<button type="button" class="btn sm" onclick="adRestaurar('${p.id}')">Restaurar</button><button type="button" class="lk red" onclick="adExcluirDef('${p.id}')">Excluir de vez</button>`:`<button type="button" class="btn sm" onclick="editar('${p.id}')">Editar</button><button type="button" class="lk red" onclick="adLixeira('${p.id}')">Lixeira</button>`}</div></li>`).join(''):'<li class="vazio2">Nenhum produto aqui.</li>';
+}
+async function adStatus(id,st,msg){
+ const r=await sbFetch('/rest/v1/produtos?id=eq.'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:st})});
+ if(!r.ok)return aviso('Não foi possível atualizar ('+await erroHttp(r)+').',1);
+ await carregar();desenhar();pintarCarrinho();aviso(msg);
+}
+const adLixeira=id=>adStatus(id,'lixeira','Movido para a lixeira ✓');
+const adRestaurar=id=>adStatus(id,'rascunho','Restaurado como rascunho ✓');
+async function adExcluirDef(id){
+ if(!confirm('Excluir de vez? Esta ação não pode ser desfeita.'))return;
  const p=itens().find(x=>x.id===id),r=await sbFetch('/rest/v1/produtos?id=eq.'+id,{method:'DELETE'});
- if(!r.ok)return aviso('Não foi possível excluir ('+r.status+').',1);
+ if(!r.ok)return aviso('Não foi possível excluir ('+await erroHttp(r)+').',1);
  if(p&&p.img)apagarFoto(p.img);
- if(editId===id)cancelar();
  await carregar();desenhar();pintarCarrinho();aviso('Item excluído ✓');
 }
-const stTxt=p=>p.status==='agendado'?'Agendado · '+fmt(p.data):p.status==='rascunho'?'Rascunho':'Publicado';
-function lista(){
- const q=norm2($('#busca').value),ft=$('#fTemaAdm').value,todos=itens().sort((a,b)=>a.loc-b.loc||a.ordem-b.ordem),l=todos.filter(p=>(!q||norm2(p.nome).includes(q))&&(!ft||p.tema===ft));
- $('#cont').textContent=todos.length?l.length+' de '+todos.length+' itens':'';
- $('#lista').innerHTML=l.length?l.map(p=>`<li>${p.img?`<img src="${esc(p.img)}" alt="">`:''}<span><b>${esc(p.nome)}</b><small><span class="bd">[Loc: ${p.loc} - ${LOCS[p.loc]}]</span><span class="bd st-${p.status}">${stTxt(p)}</span></small><small>${[p.tema,p.ocasiao,p.preco>0?R(p.preco):'',p.peso>0?fmtPeso(p.peso):'',(p.tags||[]).join(' '),'ordem '+p.ordem].filter(Boolean).map(esc).join(' · ')}</small></span><button type="button" class="btn sm" onclick="editar('${p.id}')">Editar</button><button type="button" class="lk" style="color:#b3261e" onclick="excluir('${p.id}')">Excluir</button></li>`).join(''):'<li>'+(todos.length?'Nenhum item encontrado.':'Nenhum item cadastrado ainda.')+'</li>'
+async function admStats(){
+ const box=$('#stCards');box.innerHTML='<p class="dica">Carregando…</p>';
+ const prods=itens(),pc=s=>prods.filter(p=>p.status===s).length;
+ let ped=[],aviso1='';
+ try{const r=await sbFetch('/rest/v1/pedidos?select=criado,total,status&order=criado.desc&limit=1000');if(!r.ok)throw new Error(r.status);ped=await r.json()}catch(e){aviso1='Não foi possível ler os pedidos ('+e.message+'). Confira se o supabase-pedidos.sql foi executado.'}
+ let vis='—';
+ try{const r=await fetch('https://abacus.jasoncameron.dev/get/'+CONT.ns+'/'+CONT.chave);if(r.ok){const j=await r.json();if(typeof j.value==='number')vis=j.value.toLocaleString('pt-BR')}}catch{}
+ const lim=Date.now()-30*86400000,soma=l=>l.reduce((a,p)=>a+Number(p.total||0),0),pst=s=>ped.filter(p=>p.status===s);
+ const card=(t,v,d)=>`<div class="st-card"><small>${t}</small><b>${v}</b>${d?`<span>${d}</span>`:''}</div>`;
+ box.innerHTML=(aviso1?`<p class="bad" style="grid-column:1/-1">${esc(aviso1)}</p>`:'')+
+  card('Produtos publicados',pc('publicado'),pc('agendado')+' agendados')+card('Rascunhos',pc('rascunho'),pc('lixeira')+' na lixeira')+
+  card('Pedidos registrados',ped.length,ped.filter(p=>Date.parse(p.criado)>=lim).length+' nos últimos 30 dias')+
+  card('Pedidos novos',pst('novo').length,R(soma(pst('novo')))+' em aberto')+
+  card('Pedidos confirmados',pst('confirmado').length,R(soma(pst('confirmado')))+' confirmados')+
+  card('Pedidos cancelados',pst('cancelado').length,'')+card('Visitas ao site',vis,'contador público');
+}
+function admConfig(){
+ $('#cfWhats').value=CFG.whats||'';$('#cfTel').value=CFG.tel==='xxxx'?'':CFG.tel;$('#cfHor').value=CFG.horario==='xxxx'?'':CFG.horario||'';
+ $('#cfInsta').value=CFG.insta||'';$('#cfCep').value=String((CFG.frete||{}).cepOrigem||'').replace(/^(\d{5})(\d{3})$/,'$1-$2');$('#cfPag').value=(CFG.pagamentos||[]).join(', ');
+}
+async function salvarConfig(){
+ const c={whatsapp:dig($('#cfWhats').value),telefone:$('#cfTel').value.trim(),horario:$('#cfHor').value.trim(),instagram:$('#cfInsta').value.trim().replace(/^@/,''),cep_origem:dig($('#cfCep').value),pagamentos:$('#cfPag').value.split(',').map(x=>x.trim()).filter(Boolean).join(', ')};
+ if(c.whatsapp&&c.whatsapp.length<12)return aviso('Informe o WhatsApp com 55, DDD e número.',1);
+ if(c.cep_origem&&c.cep_origem.length!==8)return aviso('O CEP de origem precisa ter 8 números.',1);
+ const corpo=Object.entries(c).map(([chave,valor])=>({chave,valor}));
+ const r=await sbFetch('/rest/v1/configuracoes?on_conflict=chave',{method:'POST',headers:{'Content-Type':'application/json',Prefer:'resolution=merge-duplicates'},body:JSON.stringify(corpo)});
+ if(!r.ok)return aviso('Não foi possível salvar ('+await erroHttp(r)+'). Rode o supabase-painel.sql.',1);
+ await carregarConfig();aplicarLinks();pintarCarrinho();aviso('Configurações salvas ✓');
 }
 async function conferirPedido(){
  const cod=$('#pedCod').value.trim().toUpperCase().replace(/\s/g,'');
@@ -911,9 +1129,10 @@ function abrirSeletor(sel){
 }
 function confirmarSeletor(){const r=document.querySelector('input[name=sopc]:checked');if(selCb&&r)selCb(r.value);fecharSeletor()}
 function fecharSeletor(){$('#seletor').classList.remove('on');selCb=null}
-document.querySelectorAll('#admin select').forEach(sl=>{const w=document.createElement('div');w.className='selw';sl.parentNode.insertBefore(w,sl);w.appendChild(sl);const o=document.createElement('button');o.type='button';o.className='selov';o.onclick=()=>abrirSeletor(sl);const lb=document.querySelector('label[for="'+sl.id+'"]');o.setAttribute('aria-label','Escolher: '+(lb?lb.textContent:sl.id));w.appendChild(o);sl.tabIndex=-1});
 addEventListener('keydown',e=>{if(e.key==='Escape'){fecharSeletor();fecharDetalhe();fecharLegal();fechar()}});
-modo();iniciar();marcarMenu();
+iniciar();marcarMenu();
+if(location.hash==='#admin')abrirAdmin();
+addEventListener('hashchange',()=>{if(location.hash==='#admin')abrirAdmin()});
 const LEGAL={
 termos:{t:'Termos de Uso',h:`<p><i>Última atualização: outubro de 2026.</i></p>
 <h4>1. Sobre este site</h4><p>Este site é a vitrine da CampSaboaria, que vende lembrancinhas artesanais e personalizadas. Aqui você conhece os produtos, monta um pedido e o envia à loja pelo WhatsApp.</p>
