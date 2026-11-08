@@ -225,16 +225,26 @@ async function cotarItens(linhas: any[], cep: string, origem: string) {
 const chaveItens = (linhas: Linha[]) =>
   sha(linhas.map((l) => `${l.id}:${l.qtd}`).sort().join(','));
 
-function origemDe(b: any) {
-  const o = digitos(Deno.env.get('CEP_ORIGEM') || b.origem || CEP_ORIGEM_PADRAO);
-  if (o.length !== 8) throw new Recusa('CEP de origem inválido');
-  return o;
+async function origemDe(): Promise<string> {
+  let o = digitos(Deno.env.get('CEP_ORIGEM'));
+  if (o.length !== 8) {
+    try {
+      const r = await rest('/configuracoes?select=valor&chave=eq.cep_origem');
+      if (r.ok) {
+        const l = await r.json();
+        o = digitos(l[0]?.valor);
+      }
+    } catch (_) {
+      o = '';
+    }
+  }
+  return o.length === 8 ? o : CEP_ORIGEM_PADRAO;
 }
 
 async function acaoCotar(b: any) {
   const cep = digitos(b.cep);
   if (cep.length !== 8) throw new Recusa('CEP inválido');
-  const origem = origemDe(b);
+  const origem = await origemDe();
   const linhas = lerLinhas(b.itens);
   const itens = await carregarProdutos(linhas);
   const q = await cotarItens(itens, cep, origem);
