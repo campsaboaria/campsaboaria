@@ -173,8 +173,9 @@ async function estimarComIA(itens: Item[], pesoKg: number): Promise<Caixa> {
 
 async function cotarME(cep: string, origem: string, c: Caixa, pesoKg: number): Promise<Opcao[]> {
   const token = Deno.env.get('ME_TOKEN');
-  const email = Deno.env.get('ME_EMAIL') || 'contato@exemplo.com';
-  if (!token) throw new Error('falta o token do Melhor Envio (ME_TOKEN)');
+  const email = Deno.env.get('ME_EMAIL');
+  if (!token) throw new Error('falta o token do Melhor Envio (secret ME_TOKEN)');
+  if (!email) throw new Error('falta o e-mail de contato (secret ME_EMAIL)');
   const base = Deno.env.get('ME_URL') || 'https://melhorenvio.com.br';
   const r = await fetch(`${base}/api/v2/me/shipment/calculate`, {
     method: 'POST',
@@ -193,7 +194,11 @@ async function cotarME(cep: string, origem: string, c: Caixa, pesoKg: number): P
       services: Deno.env.get('ME_SERVICOS') || '1,2',
     }),
   });
-  if (!r.ok) throw new Error('Melhor Envio ' + r.status);
+  if (!r.ok) {
+    const corpo = (await r.text()).slice(0, 300);
+    console.error('Melhor Envio', r.status, corpo);
+    throw new Error(`Melhor Envio ${r.status}: ${corpo}`);
+  }
   const lista = await r.json();
   return (Array.isArray(lista) ? lista : [])
     .filter((s: any) => !s.error && (s.custom_price ?? s.price))
@@ -324,6 +329,7 @@ Deno.serve(async (req: Request) => {
     if (b.acao === 'pedido') return json(await acaoPedido(b));
     return json(await acaoCotar(b));
   } catch (e) {
+    console.error(e);
     const recusa = e instanceof Recusa;
     return json({ erro: String((e as Error).message || e) }, recusa ? 422 : 400);
   }

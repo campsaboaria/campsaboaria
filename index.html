@@ -329,6 +329,10 @@ label{font-size:16px}input,select,textarea{font-size:16px}
  .ad-side{position:fixed;top:60px;left:0;bottom:0;width:250px;transform:translateX(-105%);transition:transform .2s;z-index:6;box-shadow:6px 0 20px #0002}.ad-side.on{transform:none}
  .ed-grid{grid-template-columns:1fr}.ad-main{padding:14px}.ad-lista li{flex-wrap:wrap}.ad-acts{flex-direction:row;align-items:center}
 }
+
+.pw{position:relative}.pw input{padding-right:54px}
+.pwb{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:42px;height:42px;border:0;background:none;color:var(--esc);display:grid;place-items:center}
+.teste{background:#fff;border:1px solid var(--linha);border-radius:10px;padding:12px;margin-top:10px;white-space:pre-wrap;word-break:break-word;font-size:14px;color:var(--texto)}
 </style>
 </head>
 <body>
@@ -340,6 +344,8 @@ label{font-size:16px}input,select,textarea{font-size:16px}
  <symbol id="esc" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></symbol>
  <symbol id="pres" viewBox="0 0 24 24"><path d="M4 9h16v4H4zM5 13h14v7H5zM12 9v11M12 9c-1-3-5-3-4-1s3 1 4 1zm0 0c1-3 5-3 4-1s-3 1-4 1z"/></symbol>
  <symbol id="insta" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4.5"/><circle cx="12" cy="12" r="3.6"/><circle cx="17" cy="7" r=".6"/></symbol>
+ <symbol id="olho" viewBox="0 0 24 24"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+ <symbol id="olhoX" viewBox="0 0 24 24"><path d="M2 12s3.6-6.5 10-6.5c2 0 3.7.6 5.1 1.5M22 12s-3.6 6.5-10 6.5c-2 0-3.7-.6-5.1-1.5"/><path d="M4 4l16 16"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></symbol>
  <symbol id="cart" viewBox="0 0 24 24"><path d="M3 4h3l2.2 11h9.6L20 8H7"/><circle cx="9" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></symbol>
  <symbol id="ramo" viewBox="0 0 64 150"><path d="M30 148C28 100 34 52 50 4" fill="none" stroke="currentColor" stroke-width="2"/><g fill="currentColor"><ellipse cx="22" cy="118" rx="14" ry="5" transform="rotate(-35 22 118)"/><ellipse cx="40" cy="96" rx="14" ry="5" transform="rotate(35 40 96)"/><ellipse cx="22" cy="76" rx="13" ry="5" transform="rotate(-35 22 76)"/><ellipse cx="42" cy="54" rx="13" ry="5" transform="rotate(35 42 54)"/><ellipse cx="30" cy="34" rx="11" ry="4" transform="rotate(-35 30 34)"/><ellipse cx="50" cy="16" rx="9" ry="4" transform="rotate(30 50 16)"/></g></symbol>
 <symbol id="share" viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"/></symbol></defs></svg>
@@ -682,8 +688,8 @@ async function cotar(){
   $('#freteRes').textContent='Calculando o frete…';
   try{
    const r=await fetch(SB.url+'/functions/v1/'+SB.funcFrete,{method:'POST',headers:{apikey:SB.chave,'Content-Type':'application/json'},body:JSON.stringify({acao:'cotar',cep:fr.cep,itens:t.s.map(c=>({id:c.id,qtd:c.q,ess:c.ess||'',cor:c.cor||''}))})});
-   let j={};try{j=await r.json()}catch{}
-   if(!r.ok||j.erro)throw new Error(j.erro||(r.status===404?'serviço de frete ainda não instalado':r.status===401||r.status===403?'acesso negado ao serviço de frete':'erro '+r.status));
+   const tx=await r.text();let j={};try{j=JSON.parse(tx)}catch{j={erro:tx.slice(0,200)}}
+   if(!r.ok||j.erro)throw new Error(j.erro||j.error||j.message||j.msg||(r.status===404?'serviço de frete ainda não instalado':r.status===401||r.status===403?'acesso negado ao serviço de frete':'erro '+r.status));
    if(!j.opcoes||!j.opcoes.length)throw new Error('sem opções de envio');
    cot={chave,fonte:'api',token:j.cotacao,caixa:j.caixa,opcoes:j.opcoes.map((o,i)=>({id:'s'+i,nome:o.nome,valor:Number(o.valor),prazo:o.prazo||null}))};
    if((CFG.frete||{}).retirada)cot.opcoes.push({id:'ret',nome:'Retirar na loja',valor:0,prazo:null});
@@ -743,8 +749,8 @@ async function enviar(){
  if(sbOk()&&SB.funcFrete){
   try{
    const r=await fetch(SB.url+'/functions/v1/'+SB.funcFrete,{method:'POST',headers:{apikey:SB.chave,'Content-Type':'application/json'},body:JSON.stringify({acao:'pedido',cep:fr.cep||'',destino,nome,endereco:end,obs,pagamento:fr.pag,cotacao:f.cot?f.cot.token:'',frete_escolhido:sel?sel.nome:'',retirada:!!(sel&&sel.id==='ret'),itens:t.s.map(c=>({id:c.id,qtd:c.q,ess:c.ess||'',cor:c.cor||''}))})});
-   let j={};try{j=await r.json()}catch{}
-   if(!r.ok||j.erro)throw new Error(j.erro||(r.status===404?'serviço de pedidos ainda não instalado':'erro '+r.status));
+   const tx=await r.text();let j={};try{j=JSON.parse(tx)}catch{j={erro:tx.slice(0,200)}}
+   if(!r.ok||j.erro)throw new Error(j.erro||j.error||j.message||j.msg||(r.status===404?'serviço de pedidos ainda não instalado':'erro '+r.status));
    d=dDoServidor(j);ok=true;
   }catch(e){motivo=e.message==='Failed to fetch'?'sem conexão com o serviço de pedidos':e.message}
  }else motivo='serviço de pedidos não configurado';
@@ -764,7 +770,7 @@ const ADM_HTML=`
   <h2>Área do administrador</h2>
   <p class="dica">Acesso restrito. Entre com o e-mail e a senha do administrador.</p>
   <label for="email">E-mail</label><input id="email" type="email" autocomplete="username" onkeydown="if(event.key==='Enter')entrar()">
-  <label for="senha">Senha</label><input id="senha" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')entrar()">
+  <label for="senha">Senha</label><div class="pw"><input id="senha" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')entrar()"><button type="button" class="pwb" id="pwb" onclick="verSenha()" aria-label="Mostrar senha"><svg class="ico" viewBox="0 0 24 24"><use href="#olho"/></svg></button></div>
   <button class="btn" type="button" onclick="entrar()" style="width:100%;margin-top:16px">Entrar</button>
   <button class="btn out" type="button" onclick="fecharAdmin()" style="width:100%;margin-top:10px">← Voltar à loja</button>
  </div>
@@ -855,6 +861,10 @@ const ADM_HTML=`
      <label for="cfCep">CEP de origem do frete</label><input id="cfCep" inputmode="numeric" maxlength="9" placeholder="00000-000" oninput="mascaraCep(this)" autocomplete="off">
      <label for="cfPag">Formas de pagamento (separadas por vírgula)</label><input id="cfPag" placeholder="Pix, Cartão" autocomplete="off">
      <div class="linha"><button class="btn" type="button" onclick="salvarConfig()">Salvar configurações</button></div>
+     <h3 style="margin-top:22px">Teste do frete</h3>
+     <p class="dica">Faz uma cotação de verdade para o CEP 01001-000 usando o primeiro produto publicado e mostra o resultado ou o motivo do erro.</p>
+     <div class="linha"><button class="btn out" type="button" onclick="testarFrete()">Testar cálculo de frete</button></div>
+     <pre id="cfTeste" class="teste" hidden></pre>
      <p class="dica">O CEP de origem é usado pelo servidor no cálculo do frete. As formas de pagamento aparecem no carrinho.</p>
      <h3 style="margin-top:22px">Inteligência artificial</h3>
      <p class="dica">A chave da IA fica guardada só neste aparelho.</p>
@@ -893,6 +903,7 @@ function admEstado(){
  if(a){$('#adUser').textContent=(sess.user&&sess.user.email)||'';admView(admAtual==='editor'?'produtos':admAtual)}
  else setTimeout(()=>{const e=$('#email');if(e)e.focus({preventScroll:true})},150);
 }
+function verSenha(){const i=$('#senha'),v=i.type==='password';i.type=v?'text':'password';$('#pwb').innerHTML='<svg class="ico" viewBox="0 0 24 24"><use href="#'+(v?'olhoX':'olho')+'"/></svg>';$('#pwb').setAttribute('aria-label',v?'Ocultar senha':'Mostrar senha')}
 function adMenu(){$('#adSide').classList.toggle('on')}
 function admView(v){
  admAtual=v;
@@ -1027,6 +1038,18 @@ async function admStats(){
 function admConfig(){
  $('#cfWhats').value=CFG.whats||'';$('#cfTel').value=CFG.tel==='xxxx'?'':CFG.tel;$('#cfHor').value=CFG.horario==='xxxx'?'':CFG.horario||'';
  $('#cfInsta').value=CFG.insta||'';$('#cfCep').value=String((CFG.frete||{}).cepOrigem||'').replace(/^(\d{5})(\d{3})$/,'$1-$2');$('#cfPag').value=(CFG.pagamentos||[]).join(', ');
+}
+async function testarFrete(){
+ const box=$('#cfTeste'),p=itens().find(x=>x.status==='publicado'&&x.peso>0&&[1,4,5].includes(x.loc));
+ box.hidden=false;
+ if(!p){box.textContent='Cadastre antes um produto publicado com peso.';return}
+ box.textContent='Calculando…';
+ try{
+  const r=await fetch(SB.url+'/functions/v1/'+SB.funcFrete,{method:'POST',headers:{apikey:SB.chave,'Content-Type':'application/json'},body:JSON.stringify({acao:'cotar',cep:'01001000',itens:[{id:p.id,qtd:1}]})});
+  const tx=await r.text();let j;try{j=JSON.parse(tx)}catch{j=null}
+  if(r.ok&&j&&j.opcoes)box.textContent='Funcionou ('+p.nome+', CEP 01001-000)\n'+j.opcoes.map(o=>o.nome+': '+R(o.valor)+(o.prazo?' em '+o.prazo+' dias úteis':'')).join('\n')+'\nCaixa: '+j.caixa.comprimento+' x '+j.caixa.largura+' x '+j.caixa.altura+' cm ('+(j.caixa.fonte==='ia'?'estimada pela IA':'estimativa simples')+')';
+  else box.textContent='Erro '+r.status+'\n'+((j&&(j.erro||j.error||j.message))||tx.slice(0,400));
+ }catch(e){box.textContent='Não foi possível falar com a função: '+e.message}
 }
 async function salvarConfig(){
  const c={whatsapp:dig($('#cfWhats').value),telefone:$('#cfTel').value.trim(),horario:$('#cfHor').value.trim(),instagram:$('#cfInsta').value.trim().replace(/^@/,''),cep_origem:dig($('#cfCep').value),pagamentos:$('#cfPag').value.split(',').map(x=>x.trim()).filter(Boolean).join(', ')};
